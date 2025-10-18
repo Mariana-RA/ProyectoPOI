@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiniela</title>
+  <link rel="stylesheet" href="/sRegis.css">
+</head>
+<body>
+  <div class="container">
+
+    <div class="barraNav">
+      <div class="contenido">
+        <a href="/Home" class="btn-contenido" id="Quiniela">Quiniela</a>
+        <a href="/Puntuaciones" class="btn-contenido">Puntuaciones</a>
+        <a href="/chats" class="btn-contenido">Chats</a>
+      </div>
+
+      <div class="perfilUserH">
+        <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="perfil-imgH" id="perfilImg">
+      </div>
+    </div>
+
+    <div class="menuH" id="dropdownMenu">
+        <a href="/">Iniciar sesión</a>
+    </div>
+
+    <div class="formRegis">
+      <form id="RegisU" action="/insertU" method="post" enctype="multipart/form-data">
+      <div class="inputsForm">
+          <h2>Regístrate</h2>
+
+          <label for="RegisNom">Nombre(s)</label>
+          <input type="text" id="regisNom" name="regisNom" value="<%= datos ? datos.nombreU : '' %>" required>
+
+          <label for="RegisApe">Apellidos</label>
+          <input type="text" id="regisApe" name="regisApe" value="<%= datos ? datos.apeU : '' %>" required>
+
+          <label for="RegisFechaNac">Fecha de Nacimiento</label>
+          <input type="date" id="regisFechaNac" name="regisFechaNac" value="<%= datos ? datos.fechaNac : '' %>" required>
+
+          <label for="RegisEmail">Correo Electrónico</label>
+          <input type="text" id="regisEmail" name="regisEmail" value="<%= datos ? datos.emailU : '' %>" required>
+
+          <label for="RegisUser">Usuario</label>
+          <input type="text" id="regisUser" name="regisUser" value="<%= datos ? datos.user : '' %>" required>
+
+          <label for="RegisPass">Contraseña</label>
+          <input type="password" id="regisContra" name="regisContra" required>
+
+          <input type="submit" value="Registrarse" class="btnRegister">
+
+          <p>¿Ya tienes una cuenta? <a href="/">Inicia sesión</a></p>
+      </div>
+
+      <div class="fotoRegis"> 
+          <label for="RegisFoto">Foto de Perfil</label> 
+          <input type="file" id="regisfoto" accept="image/*" name="regisfoto" required> 
+          <img id="preview" src="https://via.placeholder.com/100" alt="Vista previa" class="preview-img"> 
+      </div>
+      </form>
+    </div>
+
+  </div>
+
+<% if (typeof error !== "undefined") { %>
+<div class="error-box" id="errorBox">
+<button class="close-btn" onclick="document.getElementById('errorBox').style.display='none'">✖</button>
+<span id="errorMsg"><%= error %></span>
+</div>
+<% } %>
+
+  <script src="/menu.js"></script>
+  <script src="/vistaPrevia.js"></script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background: 
+        linear-gradient(to bottom, #0a2a88, rgb(2, 61, 100)),
+        url('/Fondo3.png');
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-blend-mode:multiply;
+}
+
+.slogan {
+  position: absolute;
+  top: 5%;
+  text-align: center;
+  width: 100%;
+  font-size: 50px;
+  font-weight: bold;
+  color: #4e6dca;
+  text-shadow: 0 0 10px rgba(0,0,0,0.6);
+  animation: fadeIn 3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* Caja del formulario */
+
+.FormLogin {
+    background: rgba(20, 30, 48, 0.8); /* azul oscuro semitransparente */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    width: 320px;
+    text-align: center;
+    color: #e0e0e0; /* texto claro */
+}
+
+/* Labels */
+.FormLogin label {
+    display: block;
+    text-align: center;
+    margin: 10px 0 5px;
+    font-weight: bold;
+    color: #b0c7ff; /* azul claro para contraste */
+}
+
+/* Inputs */
+.FormLogin input[type="text"],
+.FormLogin input[type="password"] {
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    background: rgba(40, 40, 60, 0.9); /* gris-azulado oscuro */
+    color: #f0f0f0; /* texto claro */
+    font-size: 14px;
+}
+
+/* Cuando el usuario hace foco */
+.FormLogin input[type="text"]:focus,
+.FormLogin input[type="password"]:focus {
+    outline: none;
+    border: 1px solid #4a90e2;
+    box-shadow: 0 0 6px rgba(74, 144, 226, 0.6);
+}
+
+/* Botón */
+.FormLogin .btnSubmit {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: linear-gradient(135deg, #005fcc, #003a75);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.FormLogin .btnSubmit:hover {
+    background: linear-gradient(135deg, #0077ff, #004ba0);
+}
+
+/* Link de registro */
+.FormLogin .regis-link {
+    margin-top: 10px;
+}
+
+.FormLogin .regis-link a {
+    text-decoration: none;
+    color: #66aaff;
+    font-size: 14px;
+}
+
+.FormLogin .regis-link a:hover {
+    text-decoration: underline;
+    color: #99cfff;
+}
+
+/* MENSAJES DE ERROR */
+.error-box {
+  position: fixed;            
+  top: 20px;                  
+  left: 50%;                  
+  transform: translateX(-50%);
+  max-width: 400px;
+  padding: 15px 40px 15px 20px;
+  background: linear-gradient(135deg, #1c2d4a, #2f4a7c);
+  color: #e0e6f1;
+  border: 1px solid #3b5a91;
+  border-radius: 8px;
+  font-size: 16px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 1000;              
+}
+
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  color: #aab6c9;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #ffffff;
+}

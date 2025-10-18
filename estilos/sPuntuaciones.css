@@ -1,0 +1,331 @@
+body {
+  margin: 0;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  height: 100vh;
+  background: linear-gradient(to bottom, #0a2a88, rgb(2, 61, 100));
+}
+
+.container {
+  display: flex;
+  height: 100%;
+}
+
+.barraNav {
+  width: 130px;
+  background-color: rgba(10, 20, 50, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+  border-right: 1px solid rgba(255,255,255,0.2);
+  position: relative;
+}
+
+.contenido {
+  color: aliceblue;
+}
+
+.btn-contenido {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  text-align: left;
+  border-radius: 5px;
+  transition: background 0.2s;
+  font-size: 16px;
+  color: aliceblue;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.btn-contenido:hover {
+  background: grey;
+}
+
+.perfilUserH {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 35px;
+  cursor: pointer;
+}
+
+.perfil-imgH {
+  width: 45px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid darkblue;
+}
+
+.menuH {
+    display: none;
+    position: fixed;
+    top: 610px;
+    left: 60px;
+    width: 150px;
+    background-color: #1a3689;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
+    text-align: center;
+    z-index: 1000;
+}
+
+
+.menuH a {
+  display: block;
+  padding: 10px;
+  color: aliceblue;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.menuH a:hover {
+  background-color: #3855aa;
+  color: black;
+}
+
+.contenidoRS{
+  display: flex;
+  flex-direction: row;
+  gap: 200px;
+}
+
+/* Contenedor Ranking */
+.ranking-container {
+  flex: 1;
+  padding: 30px;
+  color: aliceblue;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 30px;
+}
+
+.ranking-container h2 {
+  margin-bottom: 45px;
+  font-size: 26px;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+  color: #f5f5f5;
+  margin-left: 90px;
+}
+
+/* Lista del Ranking */
+.ranking-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 120%;
+  max-width: 600px;
+}
+
+.ranking-list li {
+  background: rgba(10, 20, 50, 0.45);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.2s;
+}
+
+.ranking-list li:hover {
+  transform: scale(1.02);
+}
+
+.ranking-list .puesto {
+  font-size: 20px;
+  font-weight: bold;
+  color: gold;
+  width: 25px;
+  text-align: center;
+}
+
+.ranking-list .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 0 12px;
+  border: 2px solid #5879dc;
+}
+
+.ranking-list .nombre {
+  flex: 1;
+  font-size: 16px;
+}
+
+.ranking-list .puntos {
+  font-weight: bold;
+  color: #40e0d0;
+}
+
+.ranking-list .top1 {
+  border: 2px solid gold;
+  background: rgba(255,215,0,0.15);
+}
+
+.ranking-list .yo {
+  border: 2px solid cyan;
+  background: rgba(0,255,255,0.15);
+}
+
+.copa {
+  position: absolute;
+  top: 100px;
+  width: 400px;
+  height: auto;
+  opacity: 0.2; 
+  z-index: 0;
+}
+
+.copa-left {
+  left: 150px;
+}
+
+.copa-right {
+  right: 15px;
+}
+
+.status-container {
+  text-align: center;
+  margin-top: 30px;
+  color: white;
+  background: rgba(0, 100, 200, 0.3); /* azul transparente */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 20px;
+  width: 450px;
+  height: 80%;
+  margin-right: 100px;
+}
+
+.status-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+}
+
+.progress-bar {
+  position: relative;
+  width: 40px;
+  height: 500px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 2px solid #fff;
+}
+
+.progress-fill {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(to top, #f39c12, #f1c40f);
+  transition: height 0.5s ease-in-out;
+}
+
+.bar-marker {
+  position: absolute;
+  left: 0; 
+  width: 100%; 
+  height: 3px; 
+  background: #3426ab; 
+  border-radius: 0;
+  z-index: 2;
+}
+
+.milestones-left {
+  position: relative;
+  width: 120px;
+  height: 500px; 
+}
+
+.milestone {
+  position: absolute;
+  right: 10px;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.titPoints {
+  display: block;
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff; /* blanco para que resalte */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  margin-bottom: 6px;
+}
+
+.MyPoints {
+  font-size: 28px;
+  font-weight: bold;
+  color: #00ffea; /* verde neón */
+  text-shadow: 0 0 8px #00ffea, 0 0 4px rgba(0, 255, 234, 0.5);
+  margin: 0;
+}
+
+/* ESTILO PARA TABLETS --------------------------------------------------------------------------- */
+@media (min-width: 768px) and (max-width: 1024px) {
+
+  .barraNav {
+    width: 100px; 
+    padding: 8px;
+  }
+
+  .btn-contenido {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .perfilUserH {
+    margin-left: 20px; 
+  }
+
+  .perfil-imgH {
+    width: 40px;
+  }
+
+  .menuH {
+    left: 40px; 
+    top: auto;   
+    bottom: 40px;
+    width: 140px;
+  }
+
+  .contenidoRS{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .status-container{
+    margin-bottom: 35px;
+    margin-left: 100px;
+  }
+
+  .copa{
+    width: 300px;
+    height: auto;
+  }
+
+  .copa-left {
+    left: 80px;
+  }
+
+  .copa-right {
+    right: 0px;
+  }
+}
+
+
+
+

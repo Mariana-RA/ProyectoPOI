@@ -1,0 +1,194 @@
+const express = require("express");
+const session = require('express-session');
+const path = require("path");
+const pool = require('./conexion');
+const multer = require("multer");
+const bcrypt = require("bcrypt");
+const http = require("http");
+const {Server} = require("socket.io");
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    const ext = file.originalname.split('.').pop();
+    cb(null, Date.now() + '.' + ext);
+  }
+});
+const upload = multer({ storage: storage });
+
+app.use(express.static(path.join(__dirname, "../estilos")));
+app.use(express.static(path.join(__dirname, '../Images')));
+app.use(express.static(path.join(__dirname, '../js')));
+app.use(express.static(path.join(__dirname, '../uploads')));
+
+app.set('view engine', 'ejs');
+
+app.use(express.json());
+app.use(express.urlencoded({extended:false}));
+
+app.use(session({
+  secret: "ASDF3k9sdfjkl2349SDFJ(*&^%lkjasdf9034",
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } 
+}));
+
+app.use((req, res, next) => {
+    if (req.session.user && req.session.user.fotoPerfil) {
+        res.locals.fotoPerfil = req.session.user.fotoPerfil;
+    }
+    next();
+});
+
+//LLAMA A REGISTRO.EJS
+app.get("/registro", function(req, res){
+    res.render("registro", { datos: {} });
+});
+
+app.post("/insertU", upload.single("regisfoto"), async (req,res) => {
+    try{
+        const datosU = req.body;
+
+        let nombreU = datosU.regisNom;
+        let apeU = datosU.regisApe;
+        let fechaNac = datosU.regisFechaNac;
+        let emailU = datosU.regisEmail;
+        let user = datosU.regisUser;
+        let pass = datosU.regisContra;
+        let fotoPath = req.file.filename;
+
+        let emailTest = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|outlook\.com|hotmail\.com)$/;
+
+        if(!emailTest.test(emailU)){
+            return res.render("registro", {
+                error: "Porfavor ingresa una dirección de correo válida.",
+                datos: {
+                  nombreU: nombreU,
+                  apeU: apeU,
+                  fechaNac: fechaNac,
+                  user: user
+                }
+            });
+        }
+
+        let [userExistente] = await pool.query(
+          "SELECT Usuario FROM usuarios WHERE Usuario = ?",
+          [user]
+        );
+
+        if(userExistente.length > 0){
+          return res.render("registro", {
+                error: "El usuario ingresado ya existe, eliga otro.",
+                datos: {
+                  nombreU: nombreU,
+                  apeU: apeU,
+                  fechaNac: fechaNac,
+                  emailU: emailU
+                }
+            });
+        }
+
+        let passwordTest = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+        
+        if(!passwordTest.test(pass)){
+            return res.render("registro", {
+                error: "La contraseña debe tener mínimo 8 caracteres,\nmayúscula, minúscula, número y carácter especial.",
+                datos: {
+                  nombreU: nombreU,
+                  apeU: apeU,
+                  fechaNac: fechaNac,
+                  emailU: emailU,
+                  user: user
+                }
+            });
+        }
+
+        const saltRounds = 10;
+        const hashedPass = await bcrypt.hash(pass, saltRounds);
+
+        await pool.query(
+            "INSERT INTO usuarios (Nom_user, Ape_user, fecha_Nac, correo, Usuario, Contra, Foto) VALUES (?,?,?,?,?,?,?)",
+            [nombreU, apeU, fechaNac, emailU, user, hashedPass, fotoPath]
+        );
+
+        req.session.mensajePerfil = "Usuario registrado correctamente";
+
+        res.redirect("/");
+    }catch(err){
+        console.error(err);
+        res.send("Error al registrar usuario");
+    }
+});
+
+//LLAMA AL ROUTER DE LOGIN.JS
+const loginRouter = require("./login"); 
+app.use("/", loginRouter);
+
+//LLAMA A HOME.EJS
+const HomeRouter = require("./Home"); 
+app.use("/Home", HomeRouter);
+
+//LLAMA AL ROUTER DE PERFILU.JS
+const PerfilURouter = require("./PerfilU"); 
+app.use("/PerfilU", PerfilURouter);
+
+//LLAMA AL ROUTER DE CHATS.JS
+const chatsRouter = require("./chats"); 
+app.use("/chats", chatsRouter);
+
+//LLAMA AL ROUTER DE PUNTUACIONES.JS
+const rankingRouter = require("./Puntuaciones"); 
+const { Socket } = require("dgram");
+app.use("/Puntuaciones", rankingRouter);
+
+//LLAMA A CERRAR SESION
+app.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error(err);
+      return res.send('Error al cerrar sesión');
+    }
+    res.redirect('/');
+  });
+});
+
+//socket.io
+io.on("connection", (socket) => {
+  console.log("Usuario conectado al chat.");
+
+  socket.on("joinChat", (chatId, username) => {
+    socket.join(chatId);
+    console.log(`Usuario ${username} se unio al chat ${chatId}`);
+  });
+
+  socket.on("sendMessage", async (data) => {
+    const {idChat, remitente, contenido} = data;
+    if(!idChat || !remitente || !contenido) return;
+
+    try{
+      await pool.query(
+        "INSERT INTO mensajes (id_Chat, remitente, tipo, contenido) VALUES(?,?,'texto',?)",
+        [idChat, remitente, contenido]
+      );
+
+      io.to(idChat).emit("newMessage", {remitente, contenido});
+    }catch(err){
+      console.error("Error al guardar mensaje: ", err);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Usuario desconectado.");
+  });
+});
+
+server.listen(3000, function(){
+    console.log("Servidor creado en http://localhost:3000");
+});
+

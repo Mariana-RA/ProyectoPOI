@@ -1,0 +1,386 @@
+body {
+  margin: 0;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  height: 100vh;
+  background: linear-gradient(to bottom, #0a2a88, rgb(2, 61, 100));
+}
+
+.container {
+  display: flex;
+  height: 100%;
+}
+
+.barraNav {
+  width: 130px;
+  background-color: rgba(10, 20, 50, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+  border-right: 1px solid rgba(255,255,255,0.2);
+  position: relative;
+}
+
+.contenido {
+  color: aliceblue;
+}
+
+.btn-contenido {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  text-align: left;
+  border-radius: 5px;
+  transition: background 0.2s;
+  font-size: 16px;
+  color: aliceblue;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.btn-contenido:hover {
+  background: grey;
+}
+
+.perfilUserH {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 35px;
+  cursor: pointer;
+}
+
+.perfil-imgH {
+  width: 45px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid darkblue;
+}
+
+.menuH {
+    display: none;
+    position: fixed;
+    top: 610px;
+    left: 60px;
+    width: 150px;
+    background-color: #1a3689;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
+    text-align: center;
+    z-index: 1000;
+}
+
+.menuH a {
+  display: block;
+  padding: 10px;
+  color: aliceblue;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.menuH a:hover {
+  background-color: #3855aa;
+  color: black;
+}
+
+.tb-Quiniela {
+  position: relative;         
+  max-height: 730px;
+  overflow-y: scroll;         
+  overflow-x: hidden;
+  width: 95%;        /* más grande que 90% */
+  margin: 0 auto;         
+}
+
+.tb-Quiniela::-webkit-scrollbar {
+  display: none;
+}
+
+.tb-Quiniela::before { 
+  content: ""; 
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  background: url("https://static.vecteezy.com/system/resources/thumbnails/022/386/075/small_2x/silhouette-of-a-soccer-player-png.png") center/contain no-repeat; 
+  opacity: 0.7;
+  z-index: 0; 
+}
+
+.tb-Quiniela table { 
+  width: 90%;
+  min-width: 1000px;   /* aumenta el mínimo para que no se corte */
+  position: relative;
+  z-index: 1;
+  border-collapse: collapse;
+}
+
+/* ========================= */
+/* TABLA BASE */
+/* ========================= */
+form{
+  margin-left: 8%;
+}
+
+.tbQuiniela {
+  width: 90%;
+}
+
+.titGrupo {
+  color: #e0e0e0;
+}
+
+table {
+  width: 90%;
+  border-collapse: collapse;
+  min-width: 800px;
+  margin-top: 25px;
+  background: rgba(18, 31, 56, 0.85);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+tbody tr {
+  height: 80px;
+  transition: background 0.3s;
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+tbody tr:hover {
+  background: rgba(74, 144, 226, 0.15);
+}
+
+td {
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  text-align: center;
+  color: #e0e0e0;
+  font-size: 15px;
+  vertical-align: middle;
+}
+
+/* ========================= */
+/* TIPOS DE CELDAS */
+/* ========================= */
+
+/* Radio de equipo */
+td.radioCol {
+  width: 40px;
+  padding: 0;
+}
+td.radioCol input {
+  transform: scale(1.3);
+  cursor: pointer;
+  accent-color: #57b8ec;
+  margin: 0;
+}
+
+/* Nombre de equipo */
+td.teamCol {
+  width: 160px;
+  padding: 0 10px;
+}
+.team {
+  background: linear-gradient(rgba(20, 30, 60, 0.8), rgba(10, 20, 40, 0.8));
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.team .nameT {
+  font-weight: bold;
+  color: #99cfff;
+  text-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+
+/* Goles */
+td.scoreCol {
+  width: 60px;
+  padding: 0;
+}
+.scoreInput {
+  width: 50px;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(74, 144, 226, 0.4);
+  background: rgba(40, 40, 60, 0.85);
+  color: #f0f0f0;
+  font-weight: bold;
+  font-size: 15px;
+  text-align: center;
+  transition: 0.3s;
+}
+.scoreInput:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 8px rgba(74,144,226,0.6);
+  outline: none;
+}
+.scoreInput::-webkit-outer-spin-button,
+.scoreInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Radio de empate */
+td.drawCol {
+  width: 40px;
+  padding: 0;
+}
+td.drawCol input {
+  transform: scale(1.2);
+  cursor: pointer;
+  accent-color: #57b8ec;
+  margin: 0;
+}
+
+.msgQuiniela{
+  position: fixed;
+  top: 40%;
+  left: 40%;
+  width: 350px;
+  height: 140px;
+  background: #182f6a; 
+  color: aliceblue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.2);
+  z-index: 999;
+  display: none;
+}
+
+.msgQuiniela p{
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.msg-buttons{
+  display: flex;
+  justify-content: space-around;
+  gap: 15px;
+}
+
+.msg-buttons button{
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btnAceptar {
+  background-color: #5879dc;
+  color: #03113b;
+}
+
+.btnAceptar:hover {
+  background-color: #2e8bdc;
+}
+
+.btnCancelar {
+  background-color: #5879dc;
+  color: #03113b;
+}
+
+.btnCancelar:hover {
+  background-color: #2e8bdc;
+}
+
+.btnQuiniela {
+  display: block;        
+  margin-left: auto;     
+  margin-right: 0;       
+  margin-top: 20px;   
+  width: 200px;         
+  height: 45px;
+  font-weight: bold;
+  background-color: #5879dc;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btnQuiniela:hover {
+  background: rgb(40, 196, 196);
+}
+
+/* ESTILO PARA TABLETS --------------------------------------------------------------------------- */
+@media (min-width: 768px) and (max-width: 1024px) {
+
+  .barraNav {
+    width: 100px; 
+    padding: 8px;
+  }
+
+  .btn-contenido {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .perfilUserH {
+    margin-left: 20px; 
+  }
+
+  .perfil-imgH {
+    width: 40px;
+  }
+
+  .tb-Quiniela{
+    max-height: 1150px;
+  }
+
+  table {
+    width: 95% !important; 
+    min-width: 0 !important; 
+    font-size: 14px;
+    top: 20%;
+    right: 3%;
+  }
+
+  td {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .scoreInput {
+    width: 40px;
+    font-size: 14px;
+    padding: 5px;
+  }
+
+  .btnQuiniela{
+    width: 35%;
+    font-size: 20px;
+    right: 50px;
+    bottom: 400px;
+  }
+
+  .menuH {
+    left: 40px; 
+    top: auto;   
+    bottom: 40px;
+    width: 140px;
+  }
+}
+
+
+
+
+
+

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil de Usuario</title>
+  <link rel="stylesheet" href="/sPerfil.css">
+</head>
+<body>
+  <div class="container">
+
+    <div class="barraNav">
+      <div class="contenido">
+        <a href="/Home" class="btn-contenido">Quiniela</a>
+        <a href="/Puntuaciones" class="btn-contenido">Puntuaciones</a>
+        <a href="/chats" class="btn-contenido">Chats</a>
+      </div>
+
+      <div class="perfilUserH">
+        <img src="/<%= fotoPerfil %>" class="perfil-imgH" id="perfilImg">
+      </div>
+    </div>
+
+    <div class="menuH" id="dropdownMenu">
+        <a href="/PerfilU">Perfil de Usuario</a>
+        <a href="/logout">Cerrar Sesión</a>
+    </div>
+
+    <div class="formRegis">
+      <form id="perfilU" action="/PerfilU/updatePerfilU" method="post" enctype="multipart/form-data">
+      <div class="inputsForm">
+          <h2>Perfil de Usuario</h2>
+
+          <label for="RegisNom">Nombre(s)</label>
+          <input type="text" id="regisNom" name="perfilNom" value="<%= usuario ? (usuario.Nom_user || usuario.nombreU || '') : '' %>">
+
+          <label for="RegisApe">Apellidos</label>
+          <input type="text" id="regisApe" name="perfilApe" value="<%= usuario ? (usuario.Ape_user || usuario.apeU || '') : '' %>">
+
+          <label for="RegisFechaNac">Fecha de Nacimiento</label>
+          <input type="date" id="regisFechaNac" name="perfilFechaNac" value="<%= usuario ? (
+                usuario.fecha_Nac 
+                  ? new Date(usuario.fecha_Nac).toISOString().split('T')[0]
+                  : (usuario.fechaNac || '')
+          ) : '' %>">
+
+          <label for="RegisEmail">Correo Electrónico</label>
+          <input type="text" id="regisEmail" name="perfilEmail" value="<%= usuario ? (usuario.correo || usuario.emailU || '') : '' %>">
+
+          <label for="RegisUser">Usuario</label>
+          <input type="text" id="regisUser" name="perfilUser" value="<%= usuario ? (usuario.Usuario || usuario.user || '') : '' %>">
+
+          <label for="RegisPass">Contraseña</label>
+          <input type="password" id="regisContra" name="perfilContra">
+
+          <input type="submit" value="Guardar" class="btnRegister">
+      </div>
+
+      <div class="fotoRegis"> 
+          <label for="RegisFoto">Foto de Perfil</label>
+          <img id="previewPerfil" src="/<%= usuario.Foto %>" class="img-PerfilU"> 
+          <input type="file" id="perfilfoto" accept="image/*" name="perfilfoto"> 
+      </div>
+      </form>
+    </div>
+
+  </div>
+
+<% if (typeof error !== "undefined") { %>
+<div class="error-box" id="errorBox">
+  <button class="close-btn" onclick="document.getElementById('errorBox').style.display='none'">✖</button>
+  <span id="errorMsg"><%= error %></span>
+</div>
+<% } %>
+
+<% if (typeof mensaje !== "undefined") { %>
+<div class="error-box" id="messageBox">
+  <button class="close-btn" onclick="document.getElementById('messageBox').style.display='none'">✖</button>
+  <span id="errorMsg"><%= mensaje %></span>
+</div>
+<% } %>
+
+  <script src="/menu.js"></script>
+  <script src="/vistaPrevia.js"></script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chats</title>
+    <link rel="stylesheet" href="/styleC.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+
+    <div class="barraNav">
+      <div class="contenido">
+        <a href="/Home" class="btn-contenido" id="Quiniela">Quiniela</a>
+        <a href="/Puntuaciones" class="btn-contenido">Puntuaciones</a>
+        <a href="/chats" class="btn-contenido">Chats</a>
+      </div>
+
+      <div class="perfilUserH">
+        <img src="/<%= fotoPerfil %>" class="perfil-imgH" id="perfilImg">
+      </div>
+    </div>
+
+    <div class="menuH" id="dropdownMenu">
+        <a href="/PerfilU">Perfil de Usuario</a>
+        <a href="/logout">Cerrar Sesión</a>
+    </div>
+
+    <div class="Chats">
+        <h2>Chats</h2>
+        <div class="busqueda">
+            <input type="text" id="myInput" placeholder="Buscar chats...">
+            <button class="btnBuscar" id="btnBuscar">🔍︎</button>
+
+            <div class="resultadoBusqueda" id="resultadoBusqueda"></div>
+        </div>
+        <button class="btnNewG" id="actionBtn">Nuevo grupo</button>
+        <hr>
+
+        <div class="NewGPanel" id="NewGPanel">
+          <h2>Crear nuevo grupo</h2>
+          <input type="text" id="myInput" placeholder="Buscar chats...">
+          <button class="btnBuscar" id="btnSearchNG">🔍︎</button>
+
+          <div class="resultNewG" id="resultNewG">
+              <button class="resultNG" id="chatItem">
+                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="perfil-Ch">
+                <span>Juan Pérez Rodríguez</span>
+              </button>
+
+              <button class="resultNG" id="chatItem">
+                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="perfil-Ch">
+                <span>Juan Pérez Rodríguez</span>
+              </button>
+
+              <button class="resultNG" id="chatItem">
+                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="perfil-Ch">
+                <span>Juan Pérez Rodríguez</span>
+              </button>
+
+              <button class="resultNG" id="chatItem">
+                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="perfil-Ch">
+                <span>Juan Pérez Rodríguez</span>
+              </button>
+
+              <button class="resultNG" id="chatItem">
+                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="perfil-Ch">
+                <span>Juan Pérez Rodríguez</span>
+              </button>
+
+          </div>
+
+          <br>
+          <input type="text" placeholder="Nombre del grupo" class="inputGrupo">
+          <button class="btnConfirmar">➲</button>
+        </div>
+
+        <div class="listaChats" id="listaChats"></div>
+
+    </div>
+
+    <div class="chatB">
+
+      <div class="Bienvenida" id="Bienvenida">
+        <img src="/Fondo_Chat.png" class="FondoC">
+        <p>Aquí podrás conectar con tus amigos, hacer llamadas y disfrutar de una manera más divertida todos los momentos del torneo.</p>
+      </div>
+
+      <div class="chatBox" id="chatBox">
+        <div class="headerChat">
+          <span class="chatNombre" id="chatNombre">Nombre del Usuario</span>
+          <button class="btnCall">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="M162-120q-18 0-30-12t-12-30v-162q0-13 9-23.5t23-14.5l138-28q14-2 28.5 2.5T342-374l94 94q38-22 72-48.5t65-57.5q33-32 60.5-66.5T681-524l-97-98q-8-8-11-19t-1-27l26-140q2-13 13-22.5t25-9.5h162q18 0 30 12t12 30q0 125-54.5 247T631-329Q531-229 409-174.5T162-120Zm556-480q17-39 26-79t14-81h-88l-18 94 66 66ZM360-244l-66-66-94 20v88q41-3 81-14t79-28Zm358-356ZM360-244Z"/>
+              </svg>
+            </button>
+          <button class="btnCorreo" id="btnCorreo">
+            <i class="fa-regular fa-envelope"></i>
+          </button>
+          <button class="btnMissions" id="btnMisiones">≪</button>
+          <button class="btnMas" id="btnMas">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </button>
+
+
+          <div class="misionesPanel" id="misionesPanel">
+            <div class="mision" data-progress="50">
+              <span class="misionNombre">Nombre de la mision</span>
+
+              <div class="progreso">
+                <div class="progreso-fill"></div>
+                <div class="balon">⚽</div>
+              </div>
+
+              <button class="btnReclamar" disabled>Reclamar</button>
+            </div>
+
+            <div class="mision" data-progress="100">
+              <span class="misionNombre">Nombre de la mision</span>
+
+              <div class="progreso">
+                <div class="progreso-fill"></div>
+                <div class="balon">⚽</div>
+              </div>
+
+              <button class="btnReclamar" disabled>Reclamar</button>
+            </div>
+
+            <div class="mision" data-progress="100">
+              <span class="misionNombre">Nombre de la mision</span>
+
+              <div class="progreso">
+                <div class="progreso-fill"></div>
+                <div class="balon">⚽</div>
+              </div>
+
+              <button class="btnReclamar" disabled>Reclamar</button>
+            </div>
+
+            <div class="mision" data-progress="75">
+              <span class="misionNombre">Nombre de la mision</span>
+
+              <div class="progreso">
+                <div class="progreso-fill"></div>
+                <div class="balon">⚽</div>
+              </div>
+
+              <button class="btnReclamar" disabled>Reclamar</button>
+            </div>
+
+            <div class="mision" data-progress="25">
+              <span class="misionNombre">Nombre de la mision</span>
+
+              <div class="progreso">
+                <div class="progreso-fill"></div>
+                <div class="balon">⚽</div>
+              </div>
+
+              <button class="btnReclamar" disabled>Reclamar</button>
+            </div>
+
+          </div>
+
+          <div class="Chsettings" id="Chsettings">
+            <h2>Configuración del chat</h2>
+            <label class="checkbox-container">
+              <input type="checkbox" id="encryptMessages">
+              <span class="checkmark"></span>
+              Habilitar el cifrado de mensajes
+            </label>
+
+            <button class="btnCrMission" id="btnCrMission">Crear nueva misión</button>
+          </div>
+
+          <div class="NewMissionP" id="NewMissionP">
+            <h2>CREAR MISIÓN</h2>
+            <label>Nombre de la misión</label>
+            <input type="text" class="inputTNewM" id="inputTNewM" placeholder="Ingresa el nombre de la mision">
+            <label>Cantidad para completar la misión</label>
+            <input type="text" class="inputCantM" id="inputCantM" placeholder="Ingresa la cantidad para completarla">
+            <div class="dropdown">
+                <label>Cantidad de puntos</label>
+                <select>
+                    <option value="year">5</option>
+                    <option value="pais">10</option>
+                    <option value="likes">15</option>
+                    <option value="commentsr">20</option>
+                </select>
+            </div>
+
+            <button class="btnNewMission" id="btnNewMission">Crear misión</button>
+          </div>
+
+          <div class="emailCont">
+            <h2>Redactar Correo</h2>
+
+            <label for="emailTo">Para:</label>
+            <p class="userDest">NOMBRE DEL USUARIO</p>
+
+            <label for="emailSubject">Asunto:</label>
+            <input type="text" id="emailSubject" placeholder="Asunto del correo">
+
+            <label for="emailBody">Mensaje:</label>
+            <textarea id="emailBody" placeholder="Escribe tu mensaje aquí..."></textarea>
+
+            <button class="sendEmailBtn">Enviar</button>
+          </div>
+
+        </div>
+
+        <div class="chatMessages"></div>
+
+        <div class="chatInput">
+          <div class="files-dropdown-wrapper">
+            <button class="btnFiles">
+              <i class="fa-solid fa-paperclip"></i>
+            </button>
+            <div class="files-dropdown">
+              <button class="file-btn">
+                <i class="fa-solid fa-file"></i>
+                <span>Archivos</span>
+              </button>
+              <button class="file-btn">
+                <i class="fa-solid fa-headphones"></i>
+                <span>Audio</span>
+              </button>
+              <button class="file-btn">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>Ubicación</span>
+              </button>
+            </div>
+          </div>
+
+          <textarea placeholder="Escribe un mensaje..."></textarea>
+          <button class="btnSend">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+              <path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="/menu.js"></script>
+  <script>
+    //window.username = "<%= user.username %>"; //variable global
+    //const username = "<%= user.username %>";
+    const username = "<%= user ? user.username : '' %>";
+  </script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/chats.js"></script>
+  <script src="/Quiniela.js"></script> 
+</body>
+</html>

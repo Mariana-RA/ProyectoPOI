@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/sLogin.css">
+</head>
+<body>
+    <h1 class="slogan">Rumbo a la Copa Mundial 2026</h1>
+    <div class="FormLogin">
+    <form id="Login" action="/validarU" method="post">
+      <label for="txtUser">Usuario</label>
+      <input type="text" name="txtUser" id="txtUser">
+
+      <label for="txtPass">Password</label>
+      <input type="password" name="txtPass" id="txtPass">
+
+      <p class="regis-link">
+        <a href="/registro">¿No tienes una cuenta?</a>
+      </p>
+
+      <input type="submit" value="Ingresar" class="btnSubmit">
+    </form>
+  </div>
+
+<% if (typeof error !== "undefined") { %>
+  <div class="error-box" id="errorBox">
+    <button class="close-btn" onclick="document.getElementById('errorBox').style.display='none'">✖</button>
+    <span id="errorMsg"><%= error %></span>
+  </div>
+<% } %>
+
+<% if (typeof mensaje !== "undefined") { %>
+<div class="error-box" id="messageBox">
+  <button class="close-btn" onclick="document.getElementById('messageBox').style.display='none'">✖</button>
+  <span id="errorMsg"><%= mensaje %></span>
+</div>
+<% } %>
+    
+</body>
+</html>
