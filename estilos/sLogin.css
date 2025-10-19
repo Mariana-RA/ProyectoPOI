@@ -143,3 +143,78 @@ body {
 .close-btn:hover {
   color: #ffffff;
 }
+
+
+/* ESTILOS PARA TELEFONO */
+@media (max-width: 767px) {
+
+  body {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    height: auto;
+    min-height: 100vh;
+    padding-top: 120px;
+    background: 
+      linear-gradient(to bottom, #0a2a88, rgb(2, 61, 100)),
+      url('/Fondo3.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: multiply;
+  }
+
+  .slogan {
+    font-size: 35px;
+    top: 5%;
+    padding: 0 10px;
+    text-shadow: 0 0 6px rgba(0,0,0,0.5);
+  }
+
+  .FormLogin {
+    position: fixed;
+    top: 30%;
+    width: 85%;
+    max-width: 300px;
+    padding: 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-bottom: 40px;
+  }
+
+  .FormLogin label {
+    margin: 8px 0 4px;
+    font-size: 13px;
+  }
+
+  .FormLogin input[type="text"],
+  .FormLogin input[type="password"] {
+    width: 95%;
+    padding: 8px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+
+  .FormLogin .btnSubmit {
+    padding: 10px;
+    font-size: 15px;
+    border-radius: 6px;
+  }
+
+  .FormLogin .regis-link a {
+    font-size: 13px;
+  }
+
+  .error-box {
+    max-width: 90%;
+    font-size: 14px;
+    padding: 12px 35px 12px 15px;
+    top: 10px;
+  }
+
+  .close-btn {
+    font-size: 16px;
+    top: 6px;
+    right: 8px;
+  }
+}

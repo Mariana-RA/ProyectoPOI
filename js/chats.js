@@ -220,6 +220,11 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelector(".Chats").style.display = "none";
             document.querySelector(".chatB").style.display = "block";
           }
+
+          if (window.innerWidth < 768) {
+            document.querySelector(".Chats").style.display = "none";
+            document.querySelector(".chatB").style.display = "block";
+          }
           
           socket.emit("joinChat", chatId, username);
           cargarMensajes(chatId);

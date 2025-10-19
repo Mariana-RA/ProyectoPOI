@@ -1216,3 +1216,183 @@ hr{
   }
 
 }
+
+/* ==================== TELÉFONO ==================== */
+@media (max-width: 767px) {
+  .barraNav {
+    width: 80px; 
+    padding: 6px;
+  }
+
+  .btn-contenido {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .perfilUserH {
+    margin-left: 10px; 
+  }
+
+  .perfil-imgH {
+    width: 35px;
+  }
+
+  .menuH {
+    left: 20px; 
+    bottom: 30px;
+    width: 120px;
+  }
+
+  .FondoC {
+    width: 90%;         
+    margin: 0 auto;
+  }
+
+  .Bienvenida p {
+    top: 40%;
+    left: 5%;          
+    margin-right: 5%;  
+    font-size: 12px;
+  }
+
+  .Chats {
+    width: 100%;
+    overflow-y: hidden;
+    overflow-x: hidden;
+  }
+
+  .listaChats {
+    max-height: 800px; 
+  }
+
+  .listaChats span {
+    margin-left: 10px;
+  }
+
+  .resultadoBusqueda {
+    width: 80%;
+  }
+
+  .img-container {
+    width: 50px;  
+    height: 50px;
+  }
+
+  .chatItem span {
+    font-size: 15px;
+  }
+
+  .status-dot {
+    width: 12px;
+    height: 12px;
+  }
+
+  .chatResult img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .chatResult span {
+    font-size: 16px;
+  }
+
+  .NewGPanel {
+    left: 10%;
+    top: 25%;
+    width: 80%;
+  }
+
+  .NewGPanel input {
+    width: 80%;
+  }
+
+  .chatB {
+    display: none;
+    overflow-y: auto;
+  }
+
+  .headerChat {
+    padding: 10px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    position: relative;
+  }
+
+  .chatNombre{
+    font-size: 14px;
+    white-space: nowrap;       
+    overflow: hidden;          
+    text-overflow: ellipsis;   
+    max-width: 50%;            
+    display: inline-block;     
+    vertical-align: middle;
+  }
+
+  .btnCall,
+  .btnCorreo,
+  .btnMissions,
+  .btnMas {
+    position: static; 
+    margin-left: 0;
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+
+  .btnMas {
+    padding: 4px 8px;
+  }
+
+  .chatMessages {
+    height: 800px;
+    max-height: 800px;
+  }
+
+  .chatInput textarea {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .btnSend svg {
+    height: 24px;
+    width: 24px;
+  }
+
+  .emailCont {
+    background: rgba(0, 30, 60, 0.95); 
+    left: 10%;
+    top: 75%;
+    width: 80%;
+    margin-top: 45%;
+  }
+
+  .misionesPanel {
+    left: 10%;
+    top: 85%;
+    width: 80%;
+  }
+
+  .Chsettings {
+    left: 55%;
+    top: 75%;
+    width: 40%;
+    height: 250px;
+  }
+
+  .NewMissionP {
+    height: 350px;
+    left: 15%;
+    margin-top: 50%;
+    width: 70%;
+  }
+
+  .dropdown select option {
+    font-size: 13px;
+  }
+
+  .ult-mensaje {
+    color: #e0e6f158;
+    margin-left: 10px;
+    font-size: 12px;
+  }
+}

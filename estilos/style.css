@@ -379,6 +379,70 @@ td.drawCol input {
   }
 }
 
+/* ESTILOS PARA TELEFONOS */
+@media (max-width: 767px) {
+
+  .barraNav {
+    width: 80px;
+    padding: 6px;
+  }
+
+  .btn-contenido {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .perfilUserH {
+    margin-left: 10px;
+  }
+
+  .perfil-imgH {
+    width: 35px;
+  }
+
+  .tb-Quiniela {
+    max-height: 1000px;
+    overflow-x: auto;          
+    -webkit-overflow-scrolling: touch; 
+  }
+
+  .tb-Quiniela table {
+    width: 100%;
+    min-width: 500px;          
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  td, th {
+    font-size: 12px;
+    padding: 6px;
+    text-align: center;
+    word-wrap: break-word;     
+  }
+
+  .scoreInput {
+    width: 35px;
+    font-size: 12px;
+    padding: 4px;
+  }
+
+  .btnQuiniela {
+    width: 80%;
+    font-size: 16px;
+    right: 0;
+    bottom: 150px;
+  }
+
+  .menuH {
+    left: 20px;
+    bottom: 30px;
+    width: 120px;
+  }
+}
+
+
+
+
 
 
 
