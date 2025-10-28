@@ -18,7 +18,7 @@ router.post("/validarU", async (req, res) => {
 
         let [resultado] = await pool.query(
             "SELECT Usuario, Contra, Foto FROM usuarios WHERE Usuario = ?",
-            [userL, passL]
+            [userL]
         );
 
         if (resultado.length === 0) {

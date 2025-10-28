@@ -1,19 +1,30 @@
+require("dotenv").config();
+
 const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 const pool = require("./conexion");
 const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    const ext = file.originalname.split('.').pop();
-    cb(null, Date.now() + '.' + ext);
-  }
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-const upload = multer({ storage: storage });
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'uploads/');
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.originalname.split('.').pop();
+//     cb(null, Date.now() + '.' + ext);
+//   }
+// });
+// const upload = multer({ storage: storage });
 
 function isAuthenticated(req, res, next) {
     if (req.session && req.session.user && req.session.user.username) {
@@ -60,7 +71,7 @@ router.post("/updatePerfilU", isAuthenticated, upload.single("perfilfoto"), asyn
         let emailU = datosP.perfilEmail;
         let user = datosP.perfilUser;
         let pass = datosP.perfilContra;
-        let fotoPath = req.file ? req.file.filename : null;
+        let fotoPath = null;
 
         let campos = ["Nom_user = ?", "Ape_user = ?", "fecha_Nac = ?", "correo = ?", "Usuario = ?"];
         let valores = [nombreU, apeU, fechaNac, emailU, user];
@@ -98,6 +109,19 @@ router.post("/updatePerfilU", isAuthenticated, upload.single("perfilfoto"), asyn
                     }
                 });
             }
+        }
+
+        if(req.file){
+            fotoPath = await new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: "usuarios", public_id: `perfil_${user}_${Date.now()}`, overwrite: true},
+                    (err, res) => {
+                        if(err) reject(err);
+                        else resolve(res.secure_url);
+                    }
+                );
+                stream.end(req.file.buffer);
+            });
         }
 
         if (fotoPath) {

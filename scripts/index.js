@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const session = require('express-session');
 const path = require("path");
@@ -6,26 +8,35 @@ const multer = require("multer");
 const bcrypt = require("bcrypt");
 const http = require("http");
 const {Server} = require("socket.io");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    const ext = file.originalname.split('.').pop();
-    cb(null, Date.now() + '.' + ext);
-  }
-});
-const upload = multer({ storage: storage });
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'uploads/');
+//   },
+//   filename: (req, file, cb) => {
+//     const ext = file.originalname.split('.').pop();
+//     cb(null, Date.now() + '.' + ext);
+//   }
+// });
+//const upload = multer({ storage: storage });
 
 app.use(express.static(path.join(__dirname, "../estilos")));
 app.use(express.static(path.join(__dirname, '../Images')));
 app.use(express.static(path.join(__dirname, '../js')));
-app.use(express.static(path.join(__dirname, '../uploads')));
+//app.use(express.static(path.join(__dirname, '../uploads')));
 
 app.set('view engine', 'ejs');
 
@@ -61,7 +72,7 @@ app.post("/insertU", upload.single("regisfoto"), async (req,res) => {
         let emailU = datosU.regisEmail;
         let user = datosU.regisUser;
         let pass = datosU.regisContra;
-        let fotoPath = req.file.filename;
+        //let fotoPath = req.file.filename;
 
         let emailTest = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|outlook\.com|hotmail\.com)$/;
 
@@ -111,6 +122,29 @@ app.post("/insertU", upload.single("regisfoto"), async (req,res) => {
 
         const saltRounds = 10;
         const hashedPass = await bcrypt.hash(pass, saltRounds);
+
+        let fotoPath = null;
+        if(req.file){
+          const result = await cloudinary.uploader.upload_stream({
+            folder: "usuarios",
+            public_id: `perfil_${user}_${Date.now()}`,
+            overwrite: true
+          }, (err, res) => {
+            if(err) throw err;
+            return res;
+          });
+
+          fotoPath = await new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: "usuarios", public_id: `perfil_${user}_${Date.now()}`, overwrite: true},
+              (err, res) => {
+                if (err) reject(err);
+                else resolve(res.secure_url);
+              }
+            );
+            stream.end(req.file.buffer);
+          });
+        }
 
         await pool.query(
             "INSERT INTO usuarios (Nom_user, Ape_user, fecha_Nac, correo, Usuario, Contra, Foto) VALUES (?,?,?,?,?,?,?)",
