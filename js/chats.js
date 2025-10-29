@@ -116,20 +116,19 @@ let isMuted = false;
 //     }
 //   ]
 // };
-
 const config = {
   iceTransportPolicy: "all",
   iceServers: [
-    { urls: "stun:openrelay.metered.ca:80" },
+    { urls: "stun:stun.l.google.com:19302" },
     {
-      urls: "turn:openrelay.metered.ca:80",
-      username: "openrelayproject",
-      credential: "openrelayproject"
+      urls: "turn:relay1.expressturn.com:3478",
+      username: "efok8eMDYLbVzdDL1V",
+      credential: "6Q2e10$$jp6Co1Ec"
     },
     {
-      urls: "turn:openrelay.metered.ca:443?transport=tcp",
-      username: "openrelayproject",
-      credential: "openrelayproject"
+      urls: "turn:relay1.expressturn.com:5349?transport=tcp",
+      username: "efok8eMDYLbVzdDL1V",
+      credential: "6Q2e10$$jp6Co1Ec"
     }
   ]
 };
@@ -331,93 +330,182 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   //--------------------VIDEOLLAMADA------------------------------------------
-  async function startCall(isInitiator = false) {
-    //chatMessages.style.display = "none";
-    videoCont.style.display = "block";
-    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true});
-    myVideo.srcObject = localStream;
+  // async function startCall(isInitiator = false) {
+  //   //chatMessages.style.display = "none";
+  //   videoCont.style.display = "block";
+  //   localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true});
+  //   myVideo.srcObject = localStream;
 
-    //const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302"}]};
-    peerConnection = new RTCPeerConnection(config);
+  //   //const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302"}]};
+  //   peerConnection = new RTCPeerConnection(config);
 
-    //DEPURACION
-    // Log para ver estado de ICE
-    peerConnection.oniceconnectionstatechange = () => {
-      console.log(`[ICE STATE]`, peerConnection.iceConnectionState);
-    };
+  //   //DEPURACION
+  //   // Log para ver estado de ICE
+  //   peerConnection.oniceconnectionstatechange = () => {
+  //     console.log(`[ICE STATE]`, peerConnection.iceConnectionState);
+  //   };
 
-    localStream.getTracks().forEach(track => peerConnection.addTrack(track,localStream));
+  //   localStream.getTracks().forEach(track => peerConnection.addTrack(track,localStream));
 
-    peerConnection.ontrack = (event) => {
-      remoteVideo.srcObject = event.streams[0];
-    };
+  //   peerConnection.ontrack = (event) => {
+  //     remoteVideo.srcObject = event.streams[0];
+  //   };
 
-    peerConnection.onicecandidate = (event) => {
-      if(event.candidate){
-        console.log("[ICE CANDIDATE]", event.candidate.candidate); //d
-        socket.emit("ice-candidate", {candidate: event.candidate, chatId});
-      }
-    };
+  //   peerConnection.onicecandidate = (event) => {
+  //     if(event.candidate){
+  //       console.log("[ICE CANDIDATE]", event.candidate.candidate); //d
+  //       socket.emit("ice-candidate", {candidate: event.candidate, chatId});
+  //     }
+  //   };
 
-    if(isInitiator){
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
-      socket.emit("offer", {offer, chatId});
-    }
-  }
+  //   if(isInitiator){
+  //     const offer = await peerConnection.createOffer();
+  //     await peerConnection.setLocalDescription(offer);
+  //     socket.emit("offer", {offer, chatId});
+  //   }
+  // }
 
-  //Llamada entrante
-  socket.on("incoming-call", () => {
-    const aceptar = confirm("Tienes una llamada, ¿aceptar?");
-    if(aceptar){
-      startCall(false);
-    }
-  });
-
-  socket.on("offer", async (data) => {
-    await startCall(false);
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
-    const answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
-    socket.emit("answer", {answer, chatId});
-  });
-
-  socket.on("answer", async (data) => {
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-  });
-
-  socket.on("ice-candidate", async (data) => {
-    if(!peerConnection) return;
-    await peerConnection.addIceCandidate(data.candidate);
-  });
-
-  socket.on("hang-up", () => {
-    if(localStream) localStream.getTracks().forEach(track => track.stop());
-    if(peerConnection) peerConnection.close();
-    videoCont.style.display = "none";
-    //chatMessages.style.display = "block";
-  });
-
-  //FUNCIONAMIENTO BOTONES
   btnCall.addEventListener("click", () => {
     socket.emit("call-user", chatId);
     startCall(true);
   });
 
+  //Llamada entrante
+  socket.on("incoming-call", () => {
+    const aceptar = confirm("Tienes una llamada, ¿aceptar?");
+    if(aceptar){
+      //startCall(false);
+      socket.emit("accept-call", chatId);
+    }
+  });
+
+  socket.on("call-acepted", () => {
+    startCall(true);
+  });
+
+  //nueva funcion de startcall()
+  async function startCall(isCaller) {
+    peerConnection = new RTCPeerConnection(config);
+
+    // Prepara stream local
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    myVideo.srcObject = localStream;
+
+    // Crea stream remoto
+    remoteStream = new MediaStream();
+    remoteVideo.srcObject = remoteStream;
+
+    // Envía tracks locales
+    localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+    // Recibe tracks remotos
+    peerConnection.ontrack = event => {
+      event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
+    };
+
+    // Candidatos ICE
+    peerConnection.onicecandidate = event => {
+      if (event.candidate) {
+        socket.emit("ice-candidate", { target: chatId, candidate: event.candidate });
+      }
+    };
+
+    // Mostrar contenedor video
+    videoCont.style.display = "flex";
+
+    // Crear y enviar offer si eres el que llama
+    if (isCaller) {
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+      socket.emit("offer", { target: chatId, offer });
+    }
+  }
+
+  // socket.on("offer", async (data) => {
+  //   await startCall(false);
+  //   await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+  //   const answer = await peerConnection.createAnswer();
+  //   await peerConnection.setLocalDescription(answer);
+  //   socket.emit("answer", {answer, chatId});
+  // });
+  socket.on("offer", async data => {
+    startCall(false); // el receptor inicia la conexión
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    socket.emit("answer", { target: chatId, answer });
+  });
+
+  // socket.on("answer", async (data) => {
+  //   await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+  // });
+  socket.on("answer", async data => {
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+  });
+
+  // socket.on("ice-candidate", async (data) => {
+  //   if(!peerConnection) return;
+  //   await peerConnection.addIceCandidate(data.candidate);
+  // });
+  socket.on("ice-candidate", async data => {
+    try {
+      await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+    } catch (e) {
+      console.error("Error al agregar ICE candidate:", e);
+    }
+  });
+
+  // socket.on("hang-up", () => {
+  //   if(localStream) localStream.getTracks().forEach(track => track.stop());
+  //   if(peerConnection) peerConnection.close();
+  //   videoCont.style.display = "none";
+  //   //chatMessages.style.display = "block";
+  // });
+
+  // //FUNCIONAMIENTO BOTONES
+  // hangUpBtn.addEventListener("click", () => {
+  //   if(localStream) localStream.getTracks().forEach(track => track.stop());
+  //   if(peerConnection) peerConnection.close();
+  //   videoCont.style.display = "none";
+  //   //chatMessages.style.display = "block";
+  //   socket.emit("hang-up", chatId);
+  // });
+  //--------------------Colgar llamada--------------------------
   hangUpBtn.addEventListener("click", () => {
-    if(localStream) localStream.getTracks().forEach(track => track.stop());
-    if(peerConnection) peerConnection.close();
-    videoCont.style.display = "none";
-    //chatMessages.style.display = "block";
+    endCall();
     socket.emit("hang-up", chatId);
   });
 
+  socket.on("hang-up", () => {
+    endCall();
+  });
+
+  //--------------------Finalizar llamada--------------------------
+  function endCall() {
+    if (localStream) localStream.getTracks().forEach(track => track.stop());
+    if (remoteStream) remoteStream.getTracks().forEach(track => remoteStream.removeTrack(track));
+    if (peerConnection) peerConnection.close();
+
+    myVideo.srcObject = null;
+    remoteVideo.srcObject = null;
+    videoCont.style.display = "none";
+  }
+
+
+  // muteBtn.addEventListener("click", () => {
+  //   isMuted = !isMuted;
+  //   if(localStream) localStream.getAudioTracks()[0].enabled = !isMuted;
+  //    muteBtn.innerHTML = isMuted 
+  //   ? '<i class="fa-solid fa-microphone-slash"></i>' 
+  //   : '<i class="fa-solid fa-microphone"></i>';
+  // });
   muteBtn.addEventListener("click", () => {
+    if (!localStream) return;
     isMuted = !isMuted;
-    if(localStream) localStream.getAudioTracks()[0].enabled = !isMuted;
-     muteBtn.innerHTML = isMuted 
-    ? '<i class="fa-solid fa-microphone-slash"></i>' 
-    : '<i class="fa-solid fa-microphone"></i>';
+    localStream.getAudioTracks().forEach(track => (track.enabled = !isMuted));
+    muteBtn.innerHTML = isMuted
+      ? `<i class="fa-solid fa-microphone-slash"></i>`
+      : `<i class="fa-solid fa-microphone"></i>`;
   });
 
 });

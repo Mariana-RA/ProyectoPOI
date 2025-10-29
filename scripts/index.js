@@ -242,12 +242,24 @@ io.on("connection", (socket) => {
     socket.to(data.chatId).emit("ice-candidate", { candidate: data.candidate});
   });
 
+  //Aceptar llamada
+  socket.on("accept-call", chatId => {
+    io.to(chatId).emit("call-accepted");
+  });
+
   socket.on("hang-up", (chatId) => {
     socket.to(chatId).emit("hang-up");
   });
 
+  // socket.on("disconnect", () => {
+  //   console.log("Usuario desconectado.");
+  //   delete chatSockets[socket.id];
+  // });
   socket.on("disconnect", () => {
-    console.log("Usuario desconectado.");
+    const info = chatSockets[socket.id];
+    if (info && info.chatId) {
+      io.to(info.chatId).emit("hang-up");
+    }
     delete chatSockets[socket.id];
   });
 });
