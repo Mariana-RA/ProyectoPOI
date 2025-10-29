@@ -406,18 +406,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Candidatos ICE
     peerConnection.onicecandidate = event => {
       if (event.candidate) {
-        socket.emit("ice-candidate", { target: chatId, candidate: event.candidate });
+        socket.emit("ice-candidate", { chatId, candidate: event.candidate });
       }
     };
 
     // Mostrar contenedor video
-    videoCont.style.display = "flex";
+    videoCont.style.display = "block";
 
     // Crear y enviar offer si eres el que llama
     if (isCaller) {
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
-      socket.emit("offer", { target: chatId, offer });
+      socket.emit("offer", { chatId, offer });
     }
   }
 
@@ -429,11 +429,11 @@ document.addEventListener("DOMContentLoaded", () => {
   //   socket.emit("answer", {answer, chatId});
   // });
   socket.on("offer", async data => {
-    startCall(false); // el receptor inicia la conexión
+    await startCall(false); // el receptor inicia la conexión
     await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
-    socket.emit("answer", { target: chatId, answer });
+    socket.emit("answer", { chatId, answer });
   });
 
   // socket.on("answer", async (data) => {
