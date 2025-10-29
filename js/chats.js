@@ -118,18 +118,18 @@ let isMuted = false;
 // };
 
 const config = {
-  iceTransportPolicy: "all", // intenta todo, host/STUN/TURN
+  iceTransportPolicy: "all",
   iceServers: [
-    { urls: "stun:stun.l.google.com:19302" }, // STUN gratis de Google
+    { urls: "stun:openrelay.metered.ca:80" },
     {
-      urls: "turn:relay1.expressturn.com:3478",
-      username: "efok8eMDYLbVzdDL1V",
-      credential: "6Q2e10$$jp6Co1Ec"
+      urls: "turn:openrelay.metered.ca:80",
+      username: "openrelayproject",
+      credential: "openrelayproject"
     },
     {
-      urls: "turn:relay1.expressturn.com:5349?transport=tcp",
-      username: "efok8eMDYLbVzdDL1V",
-      credential: "6Q2e10$$jp6Co1Ec"
+      urls: "turn:openrelay.metered.ca:443?transport=tcp",
+      username: "openrelayproject",
+      credential: "openrelayproject"
     }
   ]
 };
