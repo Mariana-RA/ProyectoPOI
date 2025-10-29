@@ -217,6 +217,28 @@ io.on("connection", (socket) => {
     }
   });
 
+  //Avisa que alguien esta llamando
+  socket.on("call-user",(chatId) => {
+    socket.to(chatId).emit("incoming-call");
+  });
+
+  //WebRTC
+  socket.on("offer", (data) => {
+    socket.to(data.chatId).emit("offer", data.offer);
+  });
+
+  socket.on("answer", (data) => {
+    socket.to(data.chatId).emit("answer", data.answer);
+  });
+
+  socket.on("ice-candidate", (data) => {
+    socket.to(data.chatId).emit("ice-candidate", data.candidate);
+  });
+
+  socket.on("hang-up", (chatId) => {
+    socket.to(chatId).emit("hang-up");
+  });
+
   socket.on("disconnect", () => {
     console.log("Usuario desconectado.");
   });
