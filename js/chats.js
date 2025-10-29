@@ -119,17 +119,16 @@ let isMuted = false;
 const config = {
   iceTransportPolicy: "all",
   iceServers: [
-    // Servidor STUN público de Google
     { urls: "stun:stun.l.google.com:19302" },
 
-    // TURN público 1 — Anyfirewall (puerto 443 TCP)
+    // Opción alternativa 1
     {
       urls: "turn:turn.anyfirewall.com:443?transport=tcp",
       username: "webrtc",
       credential: "webrtc"
     },
 
-    // TURN público 2 — OpenRelay (puertos 80 y 443)
+    // Opción alternativa 2
     {
       urls: [
         "turn:openrelay.metered.ca:80",
@@ -415,6 +414,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Candidatos ICE
     peerConnection.onicecandidate = event => {
       if (event.candidate) {
+        console.log("New ICE candidate:", event.candidate); //d
         socket.emit("ice-candidate", { chatId, candidate: event.candidate });
       }
     };
