@@ -119,14 +119,25 @@ let isMuted = false;
 const config = {
   iceTransportPolicy: "all",
   iceServers: [
+    // Servidor STUN público de Google
     { urls: "stun:stun.l.google.com:19302" },
+
+    // TURN público 1 — Anyfirewall (puerto 443 TCP)
+    {
+      urls: "turn:turn.anyfirewall.com:443?transport=tcp",
+      username: "webrtc",
+      credential: "webrtc"
+    },
+
+    // TURN público 2 — OpenRelay (puertos 80 y 443)
     {
       urls: [
-        "turn:relay1.expressturn.com:3478",
-        "turns:relay1.expressturn.com:5349"
+        "turn:openrelay.metered.ca:80",
+        "turn:openrelay.metered.ca:443",
+        "turn:openrelay.metered.ca:443?transport=tcp"
       ],
-      username: "efree",
-      credential: "efree123"
+      username: "openrelayproject",
+      credential: "openrelayproject"
     }
   ]
 };
