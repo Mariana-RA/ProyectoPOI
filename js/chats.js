@@ -105,9 +105,9 @@ const config = {
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
     {
-      urls: "turn:numb.viagenie.ca",
-      username: "webrtc@live.com",
-      credential: "muazkh"
+      urls: "turn:relay1.expressturn.com:3478",
+      username: "efok8eMDYLbVzdDL1V",
+      credential: "6Q2e10$$jp6Co1Ec"
     }
   ]
 };
