@@ -121,14 +121,12 @@ const config = {
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
     {
-      urls: "turn:relay1.expressturn.com:3478",
-      username: "efok8eMDYLbVzdDL1V",
-      credential: "6Q2e10$$jp6Co1Ec"
-    },
-    {
-      urls: "turn:relay1.expressturn.com:5349?transport=tcp",
-      username: "efok8eMDYLbVzdDL1V",
-      credential: "6Q2e10$$jp6Co1Ec"
+      urls: [
+        "turn:relay1.expressturn.com:3478",
+        "turns:relay1.expressturn.com:5349"
+      ],
+      username: "efree",
+      credential: "efree123"
     }
   ]
 };
