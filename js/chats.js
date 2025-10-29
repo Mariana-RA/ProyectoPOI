@@ -322,6 +322,12 @@ document.addEventListener("DOMContentLoaded", () => {
     //const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302"}]};
     peerConnection = new RTCPeerConnection(config);
 
+    //DEPURACION
+    // Log para ver estado de ICE
+    peerConnection.oniceconnectionstatechange = () => {
+      console.log(`[ICE STATE]`, peerConnection.iceConnectionState);
+    };
+
     localStream.getTracks().forEach(track => peerConnection.addTrack(track,localStream));
 
     peerConnection.ontrack = (event) => {
@@ -330,6 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     peerConnection.onicecandidate = (event) => {
       if(event.candidate){
+        console.log("[ICE CANDIDATE]", event.candidate.candidate); //d
         socket.emit("ice-candidate", {candidate: event.candidate, chatId});
       }
     };
