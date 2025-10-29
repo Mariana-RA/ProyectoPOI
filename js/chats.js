@@ -211,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
         chatBtn.addEventListener("click", () => {
           chatId = chat.id_Chat;
           sessionStorage.setItem("chatId", chatId);
-          document.getElementById("chatNombre").textContent = chat.Nom_user + " " + chat.Ape_user;
+          document.getElementById("chatNombre").innerHTML = chat.Nom_user + " " + chat.Ape_user + "&nbsp;&nbsp;&nbsp;&nbsp;" + chat.CantPuntos + " pts";
           chatBox.style.display = "block";
           bienvenida.style.display = "none";
 

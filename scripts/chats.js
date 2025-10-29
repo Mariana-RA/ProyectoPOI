@@ -108,6 +108,7 @@ router.get("/misChats", isAuthenticated, async (req, res) => {
                 u.Nom_user,
                 u.Ape_user,
                 u.Foto,
+                u.CantPuntos,
                 lm.contenido AS ult_mensaje,
                 lm.fecha_M AS ult_fecha
             FROM chat c
