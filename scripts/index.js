@@ -264,7 +264,13 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3000, function(){
-    console.log("Servidor creado en http://localhost:3000");
+// server.listen(3000, function(){
+//     console.log("Servidor creado en http://localhost:3000");
+// });
+const PORT = 3000;
+const HOST = '0.0.0.0'; // Escucha en todas las interfaces de red
+
+server.listen(PORT, HOST, () => {
+    console.log(`Servidor creado en http://${require('os').networkInterfaces().eth0?.[0]?.address || 'localhost'}:${PORT}`);
 });
 
