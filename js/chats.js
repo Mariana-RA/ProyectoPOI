@@ -85,8 +85,8 @@ document.addEventListener("click", (e) => {
 //-------------------- BACKEND CHATS ----------------------------------
 //TRAER LOS RESULTADOS DE LA BARRA DE BUSQUEDA DE CHATS
 let chatId = sessionStorage.getItem("chatId") || null;
-//const socket = io();
-const socket = io("http://192.168.31.167:3000");
+const socket = io();
+//const socket = io("http://192.168.31.167:3000");
 
 //--------------------VIDEOLLAMADA------------------------------------------
 const btnCall = document.querySelector(".btnCall");
