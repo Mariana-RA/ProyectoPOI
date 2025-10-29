@@ -222,19 +222,23 @@ io.on("connection", (socket) => {
 
   //Avisa que alguien esta llamando
   socket.on("call-user",(chatId) => {
+    console.log(`[server] call-user from ${socket.id} -> room ${chatId}`);
     socket.to(chatId).emit("incoming-call");
   });
 
   //WebRTC
   socket.on("offer", (data) => {
+    console.log(`[server] offer from ${socket.id} for room ${data.chatId}`);
     socket.to(data.chatId).emit("offer", { offer: data.offer });
   });
 
   socket.on("answer", (data) => {
+    console.log(`[server] answer from ${socket.id} for room ${data.chatId}`);
     socket.to(data.chatId).emit("answer", { answer: data.answer});
   });
 
   socket.on("ice-candidate", (data) => {
+    console.log(`[server] ice-candidate from ${socket.id} for room ${data.chatId}:`, data.candidate && data.candidate.candidate?.slice(0,80));
     socket.to(data.chatId).emit("ice-candidate", { candidate: data.candidate});
   });
 
