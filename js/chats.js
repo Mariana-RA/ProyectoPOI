@@ -101,9 +101,26 @@ let localStream;
 let isMuted = false;
 
 //const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+// const config = {
+//   iceTransportPolicy: "all",
+//   iceServers: [
+//     {
+//       urls: "turn:relay1.expressturn.com:3478",
+//       username: "efok8eMDYLbVzdDL1V",
+//       credential: "6Q2e10$$jp6Co1Ec"
+//     },
+//     {
+//       urls: "turn:relay1.expressturn.com:5349?transport=tcp",
+//       username: "efok8eMDYLbVzdDL1V",
+//       credential: "6Q2e10$$jp6Co1Ec"
+//     }
+//   ]
+// };
+
 const config = {
-  iceTransportPolicy: "all",
+  iceTransportPolicy: "all", // intenta todo, host/STUN/TURN
   iceServers: [
+    { urls: "stun:stun.l.google.com:19302" }, // STUN gratis de Google
     {
       urls: "turn:relay1.expressturn.com:3478",
       username: "efok8eMDYLbVzdDL1V",
@@ -116,6 +133,7 @@ const config = {
     }
   ]
 };
+
 //--------------------VIDEOLLAMADA------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
