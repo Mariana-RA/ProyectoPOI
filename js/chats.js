@@ -357,6 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   socket.on("ice-candidate", async (data) => {
+    if(!peerConnection) return;
     await peerConnection.addIceCandidate(data.candidate);
   });
 

@@ -192,12 +192,15 @@ app.get('/logout', (req, res) => {
   });
 });
 
+const chatSockets = {};
+
 //socket.io
 io.on("connection", (socket) => {
   console.log("Usuario conectado al chat.");
 
   socket.on("joinChat", (chatId, username) => {
     socket.join(chatId);
+    chatSockets[socket.id] = {chatId, username};
     console.log(`Usuario ${username} se unio al chat ${chatId}`);
   });
 
@@ -224,15 +227,15 @@ io.on("connection", (socket) => {
 
   //WebRTC
   socket.on("offer", (data) => {
-    socket.to(data.chatId).emit("offer", { offer: data.offer, from: socket.id});
+    socket.to(data.chatId).emit("offer", { offer: data.offer });
   });
 
   socket.on("answer", (data) => {
-    socket.to(data.chatId).emit("answer", { answer: data.answer, from: socket.id});
+    socket.to(data.chatId).emit("answer", { answer: data.answer});
   });
 
   socket.on("ice-candidate", (data) => {
-    socket.to(data.chatId).emit("ice-candidate", { candidate: data.candidate, from: socket.id});
+    socket.to(data.chatId).emit("ice-candidate", { candidate: data.candidate});
   });
 
   socket.on("hang-up", (chatId) => {
@@ -241,6 +244,7 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("Usuario desconectado.");
+    delete chatSockets[socket.id];
   });
 });
 
