@@ -100,7 +100,17 @@ let peerConnection;
 let localStream;
 let isMuted = false;
 
-const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+//const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+const config = {
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" },
+    {
+      urls: "turn:turn.anyfirewall.com:3478",
+      username: "webrtc",
+      credential: "turnserver"
+    }
+  ]
+};
 //--------------------VIDEOLLAMADA------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
