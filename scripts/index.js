@@ -224,15 +224,15 @@ io.on("connection", (socket) => {
 
   //WebRTC
   socket.on("offer", (data) => {
-    socket.to(data.chatId).emit("offer", data.offer);
+    socket.to(data.chatId).emit("offer", { offer: data.offer, from: socket.id});
   });
 
   socket.on("answer", (data) => {
-    socket.to(data.chatId).emit("answer", data.answer);
+    socket.to(data.chatId).emit("answer", { answer: data.answer, from: socket.id});
   });
 
   socket.on("ice-candidate", (data) => {
-    socket.to(data.chatId).emit("ice-candidate", data.candidate);
+    socket.to(data.chatId).emit("ice-candidate", { candidate: data.candidate, from: socket.id});
   });
 
   socket.on("hang-up", (chatId) => {

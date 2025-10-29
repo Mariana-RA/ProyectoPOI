@@ -99,6 +99,8 @@ const chatMessages = document.querySelector(".chatMessages");
 let peerConnection;
 let localStream;
 let isMuted = false;
+
+const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 //--------------------VIDEOLLAMADA------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -302,7 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true});
     myVideo.srcObject = localStream;
 
-    const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302"}]};
+    //const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302"}]};
     peerConnection = new RTCPeerConnection(config);
 
     localStream.getTracks().forEach(track => peerConnection.addTrack(track,localStream));
@@ -332,16 +334,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  socket.on("offer", async (offer) => {
+  socket.on("offer", async (data) => {
     await startCall(false);
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
     socket.emit("answer", {answer, chatId});
   });
 
-  socket.on("answer", async (answer) => {
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+  socket.on("answer", async (data) => {
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
   });
 
   socket.on("ice-candidate", async (data) => {
@@ -378,8 +380,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
-
-
 
 //----------------------------------- TABLET --------------------------------
 // document.querySelectorAll(".chatItem").forEach(item => {
