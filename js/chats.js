@@ -102,7 +102,7 @@ let isMuted = false;
 
 //const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 const config = {
-  iceTransportPolicy: "relay", // 🔥 fuerza TURN
+  iceTransportPolicy: "all",
   iceServers: [
     {
       urls: "turn:relay1.expressturn.com:3478",
