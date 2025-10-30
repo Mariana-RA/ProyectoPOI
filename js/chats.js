@@ -117,34 +117,19 @@ let isMuted = false;
 //     }
 //   ]
 // };
-//viejo
-// const config = {
-//   iceServers: [
-//     { urls: "stun:stun.l.google.com:19302" },
-//     {
-//       urls: [
-//         "turn:proyectopoi.metered.live:3478?transport=udp",
-//         "turn:proyectopoi.metered.live:443?transport=tcp"
-//       ],
-//       username: "d31249bf954e982936fe8a92",
-//       credential: "iHWgT3TRLXGXvb2S"
-//     }
-//   ]
-// };
 const config = {
   iceServers: [
+    { urls: "stun:stun.l.google.com:19302" },
     {
       urls: [
-        "turn:proyectopoi.metered.live:443?transport=tcp",
-        "turn:proyectopoi.metered.live:3478?transport=udp"
+        "turn:proyectopoi.metered.live:3478?transport=udp",
+        "turn:proyectopoi.metered.live:443?transport=tcp"
       ],
       username: "d31249bf954e982936fe8a92",
       credential: "iHWgT3TRLXGXvb2S"
     }
-  ],
-  iceTransportPolicy: "relay"
+  ]
 };
-
 
 //--------------------VIDEOLLAMADA------------------------------------------
 
