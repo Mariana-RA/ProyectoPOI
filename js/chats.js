@@ -454,30 +454,79 @@ document.addEventListener("DOMContentLoaded", () => {
   //   await peerConnection.setLocalDescription(answer);
   //   socket.emit("answer", {answer, chatId});
   // });
+  // socket.on("offer", async data => {
+  //   await startCall(false); // el receptor inicia la conexión
+  //   await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+  //   const answer = await peerConnection.createAnswer();
+  //   await peerConnection.setLocalDescription(answer);
+  //   socket.emit("answer", { chatId, answer });
+  // });
+
+  // // socket.on("answer", async (data) => {
+  // //   await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+  // // });
+  // socket.on("answer", async data => {
+  //   await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+  // });
+
+  // // socket.on("ice-candidate", async (data) => {
+  // //   if(!peerConnection) return;
+  // //   await peerConnection.addIceCandidate(data.candidate);
+  // // });
+  // socket.on("ice-candidate", async data => {
+  //   try {
+  //     await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+  //   } catch (e) {
+  //     console.error("Error al agregar ICE candidate:", e);
+  //   }
+  // });
+
+  let pendingCandidates = []; // buffer temporal
+
   socket.on("offer", async data => {
-    await startCall(false); // el receptor inicia la conexión
+    await startCall(false); // receptor inicia su conexión
     await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+
+    // ahora sí puede crear y enviar su answer
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
     socket.emit("answer", { chatId, answer });
+
+    // agregar cualquier ICE que haya llegado antes
+    for (const c of pendingCandidates) {
+      try {
+        await peerConnection.addIceCandidate(new RTCIceCandidate(c));
+      } catch (err) {
+        console.error("Error al agregar ICE candidate pendiente:", err);
+      }
+    }
+    pendingCandidates = [];
   });
 
-  // socket.on("answer", async (data) => {
-  //   await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-  // });
   socket.on("answer", async data => {
     await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+
+    // agregar ICE pendientes (si los hubo)
+    for (const c of pendingCandidates) {
+      try {
+        await peerConnection.addIceCandidate(new RTCIceCandidate(c));
+      } catch (err) {
+        console.error("Error al agregar ICE candidate pendiente:", err);
+      }
+    }
+    pendingCandidates = [];
   });
 
-  // socket.on("ice-candidate", async (data) => {
-  //   if(!peerConnection) return;
-  //   await peerConnection.addIceCandidate(data.candidate);
-  // });
   socket.on("ice-candidate", async data => {
-    try {
-      await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
-    } catch (e) {
-      console.error("Error al agregar ICE candidate:", e);
+    const candidate = new RTCIceCandidate(data.candidate);
+    if (peerConnection && peerConnection.remoteDescription && peerConnection.remoteDescription.type) {
+      try {
+        await peerConnection.addIceCandidate(candidate);
+      } catch (e) {
+        console.error("Error al agregar ICE candidate:", e);
+      }
+    } else {
+      pendingCandidates.push(candidate);
     }
   });
 
