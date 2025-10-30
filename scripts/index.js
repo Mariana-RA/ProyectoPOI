@@ -267,10 +267,15 @@ io.on("connection", (socket) => {
 // server.listen(3000, function(){
 //     console.log("Servidor creado en http://localhost:3000");
 // });
-const PORT = 3000;
-const HOST = '0.0.0.0'; // Escucha en todas las interfaces de red
+// const PORT = 3000;
+// const HOST = '0.0.0.0'; // Escucha en todas las interfaces de red
 
-server.listen(PORT, HOST, () => {
-    console.log(`Servidor creado en http://${require('os').networkInterfaces().eth0?.[0]?.address || 'localhost'}:${PORT}`);
+// server.listen(PORT, HOST, () => {
+//     console.log(`Servidor creado en http://${require('os').networkInterfaces().eth0?.[0]?.address || 'localhost'}:${PORT}`);
+// });
+const PORT = process.env.PORT || 3000; // 3000 para pruebas locales
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+
 
