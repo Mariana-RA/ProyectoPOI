@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 const btnFiles = document.querySelector('.btnFiles');
 const filesDropdown = document.querySelector('.files-dropdown');
 
@@ -127,8 +125,8 @@ const config = {
         "turn:proyectopoi.metered.live:3478?transport=udp",
         "turn:proyectopoi.metered.live:443?transport=tcp"
       ],
-      username: process.env.TURN_USERNAME,
-      credential: process.env.TURN_CREDENTIAL
+      username: "d31249bf954e982936fe8a92",
+      credential: "iHWgT3TRLXGXvb2S"
     }
   ]
 };
