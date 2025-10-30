@@ -117,18 +117,45 @@ let isMuted = false;
 //     }
 //   ]
 // };
+// const config = {
+//   iceServers: [
+//     { urls: "stun:stun.l.google.com:19302" },
+//     {
+//       urls: [
+//         "turn:proyectopoi.metered.live:3478?transport=udp",
+//         "turn:proyectopoi.metered.live:443?transport=tcp"
+//       ],
+//       username: "d31249bf954e982936fe8a92",
+//       credential: "iHWgT3TRLXGXvb2S"
+//     }
+//   ]
+// };
 const config = {
   iceServers: [
-    { urls: "stun:stun.l.google.com:19302" },
     {
-      urls: [
-        "turn:proyectopoi.metered.live:3478?transport=udp",
-        "turn:proyectopoi.metered.live:443?transport=tcp"
-      ],
+      urls: "stun:stun.relay.metered.ca:80",
+    },
+    {
+      urls: "turn:global.relay.metered.ca:80",
       username: "d31249bf954e982936fe8a92",
-      credential: "iHWgT3TRLXGXvb2S"
-    }
-  ]
+      credential: "iHWgT3TRLXGXvb2S",
+    },
+    {
+      urls: "turn:global.relay.metered.ca:80?transport=tcp",
+      username: "d31249bf954e982936fe8a92",
+      credential: "iHWgT3TRLXGXvb2S",
+    },
+    {
+      urls: "turn:global.relay.metered.ca:443",
+      username: "d31249bf954e982936fe8a92",
+      credential: "iHWgT3TRLXGXvb2S",
+    },
+    {
+      urls: "turns:global.relay.metered.ca:443?transport=tcp",
+      username: "d31249bf954e982936fe8a92",
+      credential: "iHWgT3TRLXGXvb2S",
+    },
+  ],
 };
 
 //--------------------VIDEOLLAMADA------------------------------------------
