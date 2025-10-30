@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const btnFiles = document.querySelector('.btnFiles');
 const filesDropdown = document.querySelector('.files-dropdown');
 
@@ -118,26 +120,15 @@ let isMuted = false;
 //   ]
 // };
 const config = {
-  iceTransportPolicy: "all",
   iceServers: [
     { urls: "stun:stun.l.google.com:19302" },
-
-    // Opción alternativa 1
-    {
-      urls: "turn:turn.anyfirewall.com:443?transport=tcp",
-      username: "webrtc",
-      credential: "webrtc"
-    },
-
-    // Opción alternativa 2
     {
       urls: [
-        "turn:openrelay.metered.ca:80",
-        "turn:openrelay.metered.ca:443",
-        "turn:openrelay.metered.ca:443?transport=tcp"
+        "turn:proyectopoi.metered.live:3478?transport=udp",
+        "turn:proyectopoi.metered.live:443?transport=tcp"
       ],
-      username: "openrelayproject",
-      credential: "openrelayproject"
+      username: process.env.TURN_USERNAME,
+      credential: process.env.TURN_CREDENTIAL
     }
   ]
 };
