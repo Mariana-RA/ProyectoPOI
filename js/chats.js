@@ -443,6 +443,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  //COMPARTIR UBICACION
+  document.getElementById('shareLocation').addEventListener('click', async () => {
+    if (!navigator.geolocation) {
+      alert('Tu navegador no soporta geolocalización.');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const { latitude, longitude } = position.coords;
+
+      const link = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+      socket.emit("sendMessage", {
+        idChat: chatId,
+        remitente: username,
+        contenido: link,
+        tipo: "texto"
+      });
+
+    }, (error) => {
+      alert('No se pudo obtener la ubicación: ' + error.message);
+    });
+  });
+
   // ------------------ CARGAR CHATS EXISTENTES ------------------
   async function cargarMisChats() {
     try {
@@ -495,11 +519,20 @@ document.addEventListener("DOMContentLoaded", () => {
           currentChatId = chat.id_Chat;
           currentChatTipo = chat.tipo;
 
+          const btnCall = document.querySelector(".btnCall");
+          const btnCorreo = document.querySelector(".btnCorreo");
+
           if (chat.tipo === "individual") {
             document.getElementById("chatNombre").innerHTML =
               `${chat.Nom_user} ${chat.Ape_user}&nbsp;&nbsp;&nbsp;&nbsp;${chat.CantPuntos || 0} pts`;
+
+              btnCall.style.display = "inline-block";
+              btnCorreo.style.display = "inline-block";
           } else if (chat.tipo === "grupo") {
             document.getElementById("chatNombre").textContent = chat.nombreG;
+
+            btnCall.style.display = "none";
+            btnCorreo.style.display = "none";
           }
 
           chatBox.style.display = "block";
@@ -574,7 +607,18 @@ document.addEventListener("DOMContentLoaded", () => {
       div.appendChild(archivoDiv);
     }else{
       const span = document.createElement("span");
-      span.textContent = msg.contenido;
+
+      if (msg.contenido.startsWith("https://www.google.com/maps?q=")) {
+        const link = document.createElement("a");
+        link.href = msg.contenido;
+        link.target = "_blank";
+        link.innerHTML = `<i class="fa-solid fa-location-dot"></i> Ver ubicación`;
+        link.classList.add("download-link");
+        span.appendChild(link);
+      }else{
+        span.textContent = msg.contenido;
+      }
+
       div.appendChild(span);
     }
 
@@ -643,7 +687,18 @@ document.addEventListener("DOMContentLoaded", () => {
         div.appendChild(archivoDiv);
       }else{
         const span = document.createElement("span");
-        span.textContent = msg.contenido;
+
+        if (msg.contenido.startsWith("https://www.google.com/maps?q=")) {
+          const link = document.createElement("a");
+          link.href = msg.contenido;
+          link.target = "_blank";
+          link.innerHTML = `<i class="fa-solid fa-location-dot"></i> Ver ubicación`;
+          link.classList.add("download-link");
+          span.appendChild(link);
+        }else{
+          span.textContent = msg.contenido;
+        }
+
         div.appendChild(span);
       }
 
