@@ -231,15 +231,15 @@
               <i class="fa-solid fa-paperclip"></i>
             </button>
             <div class="files-dropdown">
-              <button class="file-btn">
+              <button class="file-btn" data-type="all">
                 <i class="fa-solid fa-file"></i>
                 <span>Archivos</span>
               </button>
-              <button class="file-btn">
-                <i class="fa-solid fa-headphones"></i>
-                <span>Audio</span>
+              <button class="file-btn" data-type="audio">
+                <i class="fa-solid fa-photo-film"></i>
+                <span>Multimedia</span>
               </button>
-              <button class="file-btn">
+              <button class="file-btn" data-type="location">
                 <i class="fa-solid fa-location-dot"></i>
                 <span>Ubicación</span>
               </button>
@@ -253,6 +253,9 @@
             </svg>
           </button>
         </div>
+
+        <input type="file" id="fileInput" style="display:none" />
+        <input type="file" id="audioInput" accept="image/*,video/*,audio/*" style="display:none" />
 
       </div>
 

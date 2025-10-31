@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("./conexion");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 function isAuthenticated(req, res, next) {
     if (req.session && req.session.user && req.session.user.username) {
@@ -139,7 +143,7 @@ router.get("/mensajes/:idChat", isAuthenticated, async (req, res) => {
     try{
         const {idChat} = req.params;
         const [mensajes] = await pool.query(
-            "SELECT remitente, contenido, fecha_M FROM mensajes WHERE id_Chat = ? ORDER BY fecha_M ASC",
+            "SELECT remitente, contenido, tipo, fecha_M FROM mensajes WHERE id_Chat = ? ORDER BY fecha_M ASC",
             [idChat]
         );
         res.json(mensajes);
@@ -148,5 +152,52 @@ router.get("/mensajes/:idChat", isAuthenticated, async (req, res) => {
         res.status(500).json({error: "Error al obtener mensajes"});
     }
 });
+
+router.post("/uploadFile", upload.single("archivo"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No se seleccionó ningún archivo" });
+    }
+
+    const fileName = req.file.originalname.split('.').slice(0, -1).join('_');
+    const ext = req.file.originalname.split('.').pop().toLowerCase();
+    const resourceType = ['jpg','jpeg','png','gif','mp4','mov'].includes(ext) ? 'auto' : 'raw';
+    const publicId = `${fileName}_${Date.now()}`;
+
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "chat_files",
+          resource_type: resourceType,
+          public_id: publicId,
+          format: ext,
+          overwrite: true,
+          access_mode: "public",
+          type: "upload",
+          access_control: [
+            { access_type: "anonymous" } 
+          ]
+        },
+        (err, res) => {
+          if (err) reject(err);
+          else resolve(res);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
+
+    let fileUrl = result.secure_url;
+
+    res.json({
+      url: fileUrl,
+      public_id: result.public_id
+    });
+
+  } catch (err) {
+    console.error("Error al subir archivo:", err);
+    res.status(500).json({ error: "Error al subir el archivo" });
+  }
+});
+
 
 module.exports = router;

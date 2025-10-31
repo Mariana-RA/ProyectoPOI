@@ -205,16 +205,18 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendMessage", async (data) => {
-    const {idChat, remitente, contenido} = data;
-    if(!idChat || !remitente || !contenido) return;
+    const {idChat, remitente, contenido, tipo} = data;
+    if(!idChat || !remitente || !contenido || !tipo) return;
+
+    const tipoMensaje = tipo || "texto";
 
     try{
       await pool.query(
-        "INSERT INTO mensajes (id_Chat, remitente, tipo, contenido) VALUES(?,?,'texto',?)",
-        [idChat, remitente, contenido]
+        "INSERT INTO mensajes (id_Chat, remitente, tipo, contenido) VALUES(?,?,?,?)",
+        [idChat, remitente,tipoMensaje, contenido]
       );
 
-      io.to(idChat).emit("newMessage", {remitente, contenido});
+      io.to(idChat).emit("newMessage", {remitente, contenido, tipo: tipoMensaje});
     }catch(err){
       console.error("Error al guardar mensaje: ", err);
     }

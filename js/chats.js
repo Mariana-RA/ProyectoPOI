@@ -82,11 +82,78 @@ document.addEventListener("click", (e) => {
   }
 });
 
+//FILEBTN ARCHIVOS
+const fileBtn = document.querySelectorAll(".file-btn");
+const fileInput = document.getElementById("fileInput");
+const audioInput = document.getElementById("audioInput");
+
+fileBtn.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const type = btn.getAttribute("data-type");
+    if(type === "all") fileInput.click();
+    else if(type === "audio") audioInput.click();
+  });
+});
+
+fileInput.addEventListener("change", async (e) => {
+  //console.log("Archivos seleccionados:", e.target.files);
+  if(!chatId) return;
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const formData = new FormData();
+  formData.append("archivo", file);
+  formData.append("idChat", chatId);
+  formData.append("remitente", username);
+
+  const res = await fetch("/chats/uploadFile", {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+  if(data.error) return console.error(data.error);
+
+  socket.emit("sendMessage", {
+    idChat: chatId,
+    remitente: username,
+    contenido: data.url,
+    tipo: "archivo"
+  });
+
+});
+
+audioInput.addEventListener("change", async (e) => {
+  //console.log("Audio seleccionado:",e.target.files);
+  if(!chatId) return;
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const formData = new FormData();
+  formData.append("archivo", file);
+  formData.append("idChat", chatId);
+  formData.append("remitente", username);
+
+  const res = await fetch("/chats/uploadFile", {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+  if(data.error) return console.error(data.error);
+
+  socket.emit("sendMessage", {
+    idChat: chatId,
+    remitente: username,
+    contenido: data.url,
+    tipo: "archivo"
+  });
+});
+
 //-------------------- BACKEND CHATS ----------------------------------
 //TRAER LOS RESULTADOS DE LA BARRA DE BUSQUEDA DE CHATS
 let chatId = sessionStorage.getItem("chatId") || null;
 const socket = io();
-//const socket = io("http://192.168.31.167:3000");
 
 //--------------------VIDEOLLAMADA------------------------------------------
 const btnCall = document.querySelector(".btnCall");
@@ -317,7 +384,40 @@ document.addEventListener("DOMContentLoaded", () => {
     const div = document.createElement("div");
     div.classList.add("message");
     if(msg.remitente === username) div.classList.add("sent");
-    div.textContent = msg.contenido;
+
+    if(msg.tipo === "archivo"){
+      const archivoDiv = document.createElement("div");
+      archivoDiv.classList.add("file-message");
+
+      const icon = document.createElement("i");
+      if(msg.contenido.match(/\.(jpg|jpeg|png|gif)$/i)){
+        icon.className = "fa-solid fa-image file-icon";
+      } else if(msg.contenido.match(/\.(mp4|mov|webm)$/i)){
+        icon.className = "fa-solid fa-video file-icon";
+      } else if(msg.contenido.match(/\.(mp3|wav|ogg)$/i)){
+        icon.className = "fa-solid fa-headphones file-icon";
+      } else {
+        icon.className = "fa-solid fa-file file-icon";
+      }
+      archivoDiv.appendChild(icon);
+
+      const fileName = msg.contenido.split("/").pop();
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = fileName;
+      archivoDiv.appendChild(nameSpan);
+
+      const downloadLink = document.createElement("a");
+      downloadLink.href = msg.contenido;
+      downloadLink.target = "_blank";
+      downloadLink.textContent = "Ver";
+      downloadLink.classList.add("download-link");
+      archivoDiv.appendChild(downloadLink);
+
+      div.appendChild(archivoDiv);
+    }else{
+      div.textContent = msg.contenido;
+    }
+
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   });
@@ -344,7 +444,40 @@ document.addEventListener("DOMContentLoaded", () => {
       const div = document.createElement("div");
       div.classList.add("message");
       if(msg.remitente === username) div.classList.add("sent");
-      div.textContent = msg.contenido;
+
+      if(msg.tipo === "archivo"){
+        const archivoDiv = document.createElement("div");
+        archivoDiv.classList.add("file-message");
+
+        const icon = document.createElement("i");
+        if(msg.contenido.match(/\.(jpg|jpeg|png|gif)$/i)){
+          icon.className = "fa-solid fa-image file-icon";
+        } else if(msg.contenido.match(/\.(mp4|mov|webm)$/i)){
+          icon.className = "fa-solid fa-video file-icon";
+        } else if(msg.contenido.match(/\.(mp3|wav|ogg)$/i)){
+          icon.className = "fa-solid fa-headphones file-icon";
+        } else {
+          icon.className = "fa-solid fa-file file-icon";
+        }
+        archivoDiv.appendChild(icon);
+
+        const fileName = msg.contenido.split("/").pop();
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = fileName;
+        archivoDiv.appendChild(nameSpan);
+
+        const downloadLink = document.createElement("a");
+        downloadLink.href = msg.contenido;
+        downloadLink.target = "_blank";
+        downloadLink.textContent = "Ver";
+        downloadLink.classList.add("download-link");
+        archivoDiv.appendChild(downloadLink);
+
+        div.appendChild(archivoDiv);
+      }else{
+        div.textContent = msg.contenido;
+      }
+
       chatMessages.appendChild(div);
     });
     chatMessages.scrollTop = chatMessages.scrollHeight;
