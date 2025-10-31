@@ -324,7 +324,7 @@ a:hover {
 }
 
 /* ==================== TELÉFONO ==================== */
-@media (max-width: 767px) {
+/* @media (max-width: 767px) {
 
   .barraNav {
     width: 80px;
@@ -424,4 +424,111 @@ a:hover {
   .btnRegister:hover {
     background: rgb(40, 196, 196);
   }
+} */
+ @media (max-width: 767px) {
+
+  html, body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .barraNav {
+    width: 80px;
+    padding: 6px;
+    height: 100dvh;
+  }
+
+  .btn-contenido {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .perfilUserH {
+    margin-left: 10px;
+  }
+
+  .perfil-imgH {
+    width: 35px;
+  }
+
+  .menuH {
+    left: 20px;
+    bottom: 10px;
+    width: 120px;
+    height: 45px;
+  }
+
+  .formRegis {
+    flex-direction: column;
+    width: 95%;
+    max-width: 400px;
+    padding: 15px;
+    margin: 80px auto 30px;
+    gap: 12px;
+    max-height: calc(100dvh - 120px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  form {
+    width: 100%;
+  }
+
+  .inputsForm {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .fotoRegis {
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+    order: 2;
+  }
+
+  .preview-img,
+  .img-PerfilU {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  h2 {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  label,
+  p {
+    font-size: 14px;
+    text-align: left;
+    width: 100%;
+  }
+
+  input {
+    font-size: 14px;
+    width: 95%;
+    min-width: 250px;
+    padding: 10px;
+  }
+
+  .btnRegister {
+    width: 80%;
+    font-size: 15px;
+    padding: 10px;
+    justify-content: center;
+    align-self: center;
+  }
+
+  .btnRegister:hover {
+    background: rgb(40, 196, 196);
+  }
 }
+
