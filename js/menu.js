@@ -162,16 +162,16 @@ btnNewG.addEventListener("click", (e) => {
 });
 
 // cerrar al dar click fuera
-document.addEventListener("click", (e) => {
-  if (!nuevoGrupoPanel.contains(e.target) && e.target !== btnNewG) {
-    nuevoGrupoPanel.style.display = "none";
-  }
-});
+// document.addEventListener("click", (e) => {
+//   if (!nuevoGrupoPanel.contains(e.target) && e.target !== btnNewG) {
+//     nuevoGrupoPanel.style.display = "none";
+//   }
+// });
 
 // Seleccionamos los elementos por ID
 const btnSearchNG = document.getElementById("btnSearchNG");
 const resultNewG = document.getElementById("resultNewG");
-const myInput = document.getElementById("myInput");
+const myInput = document.getElementById("myInputG");
 
 // Ocultar el panel por defecto
 resultNewG.style.display = "none";

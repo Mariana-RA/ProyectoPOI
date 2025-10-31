@@ -40,40 +40,22 @@
 
         <div class="NewGPanel" id="NewGPanel">
           <h2>Crear nuevo grupo</h2>
-          <input type="text" id="myInput" placeholder="Buscar chats...">
+          <input type="text" id="myInputG" placeholder="Buscar chats...">
           <button class="btnBuscar" id="btnSearchNG">🔍︎</button>
 
-          <div class="resultNewG" id="resultNewG">
-              <button class="resultNG" id="chatItem">
-                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="perfil-Ch">
-                <span>Juan Pérez Rodríguez</span>
-              </button>
+          <div class="resultNewG" id="resultNewG"></div>
 
-              <button class="resultNG" id="chatItem">
-                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="perfil-Ch">
-                <span>Juan Pérez Rodríguez</span>
-              </button>
-
-              <button class="resultNG" id="chatItem">
-                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="perfil-Ch">
-                <span>Juan Pérez Rodríguez</span>
-              </button>
-
-              <button class="resultNG" id="chatItem">
-                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="perfil-Ch">
-                <span>Juan Pérez Rodríguez</span>
-              </button>
-
-              <button class="resultNG" id="chatItem">
-                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="perfil-Ch">
-                <span>Juan Pérez Rodríguez</span>
-              </button>
-
-          </div>
+          <div id="listaMiembros"></div>
 
           <br>
           <input type="text" placeholder="Nombre del grupo" class="inputGrupo">
           <button class="btnConfirmar">➲</button>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div class="error-box" id="messageBox" style="display:none;">
+          <button class="close-btn" onclick="document.getElementById('messageBox').style.display='none'">✖</button>
+          <span id="errorMsg"></span>
         </div>
 
         <div class="listaChats" id="listaChats"></div>

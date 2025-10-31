@@ -211,12 +211,39 @@ io.on("connection", (socket) => {
     const tipoMensaje = tipo || "texto";
 
     try{
-      await pool.query(
+      const [newMensaje] = await pool.query(
         "INSERT INTO mensajes (id_Chat, remitente, tipo, contenido) VALUES(?,?,?,?)",
         [idChat, remitente,tipoMensaje, contenido]
       );
 
-      io.to(idChat).emit("newMessage", {remitente, contenido, tipo: tipoMensaje});
+      const messageId = newMensaje.insertId;
+
+      const [msgRows] = await pool.query(
+        `SELECT m.id_Mensaje, m.id_Chat, m.remitente, m.tipo AS tipoMensaje, m.contenido, m.fecha_M, u.Nom_user, u.Ape_user, c.tipo AS tipoChat
+        FROM mensajes m
+        JOIN usuarios u ON m.remitente = u.usuario
+        JOIN chat c ON m.id_Chat = c.id_Chat
+        WHERE m.id_Mensaje = ?`,
+        [messageId]
+      )
+
+      if(msgRows.length === 0) return;
+
+      const resp = msgRows[0];
+      const msgToSend = {
+        id_Mensaje: resp.id_Mensaje,
+        id_Chat: resp.id_Chat,
+        remitente: resp.remitente,
+        Nom_user: resp.Nom_user,
+        Ape_user: resp.Ape_user,
+        tipo: resp.tipoMensaje,
+        contenido: resp.contenido,
+        fecha_M: resp.fecha_M,
+        tipoChat: resp.tipoChat   
+      };
+
+      //io.to(idChat).emit("newMessage", {remitente, contenido, tipo: tipoMensaje});
+      io.to(idChat).emit("newMessage", msgToSend);
     }catch(err){
       console.error("Error al guardar mensaje: ", err);
     }

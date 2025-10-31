@@ -103,54 +103,98 @@ router.post("/getOrCreateChat", isAuthenticated, async (req, res) => {
 });
 
 router.get("/misChats", isAuthenticated, async (req, res) => {
-    try{
-        const usuarioLog = req.session.user.username;
-        const [rows] = await pool.query(`
-            SELECT 
-                c.id_Chat,
-                u.Usuario,
-                u.Nom_user,
-                u.Ape_user,
-                u.Foto,
-                u.CantPuntos,
-                lm.contenido AS ult_mensaje,
-                lm.fecha_M AS ult_fecha
-            FROM chat c
-            JOIN chat_users cu ON cu.id_Chat = c.id_Chat
-            JOIN chat_users cu2 ON cu2.id_Chat = c.id_Chat
-            JOIN usuarios u ON cu2.id_Usuario = u.Usuario
-            LEFT JOIN (
-                SELECT m1.id_Chat, m1.contenido, m1.fecha_M
-                FROM mensajes m1
-                INNER JOIN (
-                    SELECT id_Chat, MAX(fecha_M) AS ult_fecha
-                    FROM mensajes
-                    GROUP BY id_Chat
-                ) m2 ON m1.id_Chat = m2.id_Chat AND m1.fecha_M = m2.ult_fecha
-            ) lm ON c.id_Chat = lm.id_Chat
-            WHERE cu.id_Usuario = ? AND u.Usuario <> ?
-            ORDER BY lm.fecha_M DESC
-        `, [usuarioLog, usuarioLog]);
+  try {
+    const usuarioLog = req.session.user.username;
 
-        res.json(rows);
-    }catch(err){
-        console.error("Error en misChats:", err);
-        res.status(500).json({ error: "Error al obtener mis chats" });
+    const [chats] = await pool.query(`
+      SELECT 
+        c.id_Chat,
+        c.tipo,
+        c.nombreG,
+        lm.contenido AS ult_mensaje,
+        lm.fecha_M AS ult_fecha
+      FROM chat c
+      JOIN chat_users cu ON cu.id_Chat = c.id_Chat
+      LEFT JOIN (
+        SELECT m1.id_Chat, m1.contenido, m1.fecha_M
+        FROM mensajes m1
+        INNER JOIN (
+          SELECT id_Chat, MAX(fecha_M) AS ult_fecha
+          FROM mensajes
+          GROUP BY id_Chat
+        ) m2 ON m1.id_Chat = m2.id_Chat AND m1.fecha_M = m2.ult_fecha
+      ) lm ON c.id_Chat = lm.id_Chat
+      WHERE cu.id_Usuario = ?
+      ORDER BY lm.fecha_M DESC;
+    `, [usuarioLog]);
+
+    for (let chat of chats) {
+      if (chat.tipo === "individual") {
+        // Obtener el otro usuario
+        const [otros] = await pool.query(`
+          SELECT u.Usuario, u.Nom_user, u.Ape_user, u.Foto, u.CantPuntos
+          FROM chat_users cu
+          JOIN usuarios u ON cu.id_Usuario = u.Usuario
+          WHERE cu.id_Chat = ? AND u.Usuario <> ?;
+        `, [chat.id_Chat, usuarioLog]);
+
+        if (otros.length > 0) {
+          chat.Nom_user = otros[0].Nom_user;
+          chat.Ape_user = otros[0].Ape_user;
+          chat.Foto = otros[0].Foto;
+          chat.CantPuntos = otros[0].CantPuntos;
+        }
+      } else if (chat.tipo === "grupo") {
+        // Obtener los nombres de los miembros
+        const [miembros] = await pool.query(`
+          SELECT u.Nom_user, u.Ape_user
+          FROM chat_users cu
+          JOIN usuarios u ON cu.id_Usuario = u.Usuario
+          WHERE cu.id_Chat = ?;
+        `, [chat.id_Chat]);
+
+        chat.miembros = miembros.map(m => `${m.Nom_user} ${m.Ape_user}`);
+      }
     }
+
+    res.json(chats);
+
+  } catch (err) {
+    console.error("Error en misChats:", err);
+    res.status(500).json({ error: "Error al obtener mis chats" });
+  }
 });
 
+// router.get("/mensajes/:idChat", isAuthenticated, async (req, res) => {
+//     try{
+//         const {idChat} = req.params;
+//         const [mensajes] = await pool.query(
+//             "SELECT remitente, contenido, tipo, fecha_M FROM mensajes WHERE id_Chat = ? ORDER BY fecha_M ASC",
+//             [idChat]
+//         );
+//         res.json(mensajes);
+//     }catch(err){
+//         console.error("Error al obtener mensajes:", err);
+//         res.status(500).json({error: "Error al obtener mensajes"});
+//     }
+// });
 router.get("/mensajes/:idChat", isAuthenticated, async (req, res) => {
-    try{
-        const {idChat} = req.params;
-        const [mensajes] = await pool.query(
-            "SELECT remitente, contenido, tipo, fecha_M FROM mensajes WHERE id_Chat = ? ORDER BY fecha_M ASC",
-            [idChat]
-        );
-        res.json(mensajes);
-    }catch(err){
-        console.error("Error al obtener mensajes:", err);
-        res.status(500).json({error: "Error al obtener mensajes"});
-    }
+  try {
+    const { idChat } = req.params;
+    const [mensajes] = await pool.query(
+      `SELECT m.remitente, u.Nom_user, u.Ape_user, m.contenido, m.tipo, m.fecha_M, c.tipo AS tipoChat
+       FROM mensajes m
+       JOIN usuarios u ON m.remitente = u.Usuario
+       JOIN chat c ON m.id_Chat = c.id_Chat
+       WHERE m.id_Chat = ?
+       ORDER BY m.fecha_M ASC`,
+      [idChat]
+    );
+    res.json(mensajes);
+  } catch (err) {
+    console.error("Error al obtener mensajes:", err);
+    res.status(500).json({ error: "Error al obtener mensajes" });
+  }
 });
 
 router.post("/uploadFile", upload.single("archivo"), async (req, res) => {
@@ -197,6 +241,43 @@ router.post("/uploadFile", upload.single("archivo"), async (req, res) => {
     console.error("Error al subir archivo:", err);
     res.status(500).json({ error: "Error al subir el archivo" });
   }
+});
+
+router.post("/crearGrupo", isAuthenticated, async (req, res) => {
+    try{
+        const {nombreG, miembros} = req.body;
+        const usuarioCreador = req.session.user.username;
+
+        if(!nombreG || !miembros || miembros.length < 3){
+            return res.status(400).json({ error: "Debe haber al menos 3 miembros en el grupo"});
+        }
+
+        const [newChatG] = await pool.query(
+            "INSERT INTO chat (tipo, nombreG) VALUES ('grupo', ?);",
+            [nombreG]
+        );
+
+        const chatId = newChatG.insertId;
+
+        await pool.query(
+            "INSERT INTO chat_users (id_Chat, id_Usuario, rol) VALUES (?,?,'admin');",
+            [chatId, usuarioCreador]
+        );
+
+        const values = miembros.filter(u => u !== usuarioCreador).map(u => [chatId, u, "miembro"]);
+
+        if(values.length > 0){
+            await pool.query(
+                "INSERT INTO chat_users (id_Chat, id_Usuario, rol) VALUES ?;",
+                [values]
+            );
+        }
+
+        res.json({ ok: true, idChat: chatId, nombreG});
+    }catch(err){
+        console.error("Error en /crearGrupo:", err);
+        res.status(500).json({error: "Error al crear el grupo"});
+    }
 });
 
 

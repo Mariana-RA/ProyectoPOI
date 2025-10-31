@@ -1097,6 +1097,84 @@ hr{
   max-width: 70px;
 }
 
+/* Contenedor de cada miembro en la lista */
+.miembroItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1f2a3c; /* color de fondo del item */
+  color: #e0e6f1;           /* color del texto */
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.miembroItem img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 2px solid darkblue;
+}
+
+.miembroItem span {
+  font-size: 15px;
+}
+
+/* Botón de eliminar miembro */
+.miembroItem .btnEliminar {
+  background: transparent;
+  border: none;
+  color: #ff5c5c;           /* rojo para resaltar que elimina */
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.miembroItem .btnEliminar:hover {
+  transform: scale(1.2);     /* pequeño efecto al pasar el mouse */
+  color: #ff1a1a;
+}
+
+/* MENSAJES DE ERROR */
+.error-box {
+  position: fixed;            
+  top: 20px;                  
+  left: 50%;                  
+  transform: translateX(-50%);
+  max-width: 400px;
+  padding: 15px 40px 15px 20px;
+  background: linear-gradient(135deg, #1c2d4a, #2f4a7c);
+  color: #e0e6f1;
+  border: 1px solid #3b5a91;
+  border-radius: 8px;
+  font-size: 16px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 1000;              
+}
+
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  color: #aab6c9;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #ffffff;
+}
+
+
 #videoContainer {
   position: fixed; 
   top: 50%;         

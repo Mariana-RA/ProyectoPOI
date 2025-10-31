@@ -168,6 +168,9 @@ let peerConnection;
 let localStream;
 let isMuted = false;
 
+let currentChatTipo = null;
+let currentChatId = null;
+
 //const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 // const config = {
 //   iceTransportPolicy: "all",
@@ -232,6 +235,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnSend = document.querySelector(".btnSend");
   const textarea = document.querySelector(".chatInput textarea");
   //const chatMessages = document.querySelector(".chatMessages");
+
+  //Busqueda panel new group
+  const inputBusqG = document.getElementById("myInputG");
+  const btnBusqG = document.getElementById("btnSearchNG");
+  const resultNewG = document.getElementById("resultNewG");
+  const listaMiembros = document.getElementById("listaMiembros"); // div para miembros seleccionados
+  const btnConfirmar = document.querySelector(".btnConfirmar"); // botón crear grupo
+  const inputNombreGrupo = document.querySelector(".inputGrupo");
+
+  let miembrosSeleccionados = [];
 
   // ------------------ BÚSQUEDA Y SELECCIÓN DE CHAT ------------------
   document.getElementById("btnBuscar").addEventListener("click", async (e) => {
@@ -318,15 +331,125 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // -------------------------- BUSCAR USUARIOS EN PANEL NEW GROUP ---------------------
+  btnBusqG.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const query = inputBusqG.value.trim();
+    if(!query) return;
+
+    try{
+      const res = await fetch(`/chats/buscar?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      resultNewG.innerHTML = "";
+
+      if(data.length === 0){
+        resultNewG.innerHTML = '<span style="color: #e0e6f1">No se encontraron resultados</span>';
+        inputBusqG.value = "";
+        return;
+      }
+
+      data.forEach(user => {
+        //Me falta el if de solo agregar si no esta seleccionado
+        if(miembrosSeleccionados.find(u => u.Usuario === user.Usuario)) return;
+
+        if (user.Usuario === username) return;
+
+        const btnUser = document.createElement("button");
+        btnUser.classList.add("resultNG");
+        btnUser.innerHTML = `<img src="${user.Foto}" class="perfil-Ch"><span>${user.Nom_user} ${user.Ape_user}</span>`;
+        resultNewG.appendChild(btnUser);
+        inputBusqG.value = "";
+
+        btnUser.addEventListener("click", () => {
+          miembrosSeleccionados.push(user);
+          actualizarListaMiembros();
+        });
+      });
+    }catch(err){
+      console.error("Error en la busqueda:", err);
+    }
+  });
+
+  function actualizarListaMiembros(){
+    listaMiembros.innerHTML = "";
+
+    miembrosSeleccionados.forEach((user, index) => {
+      const div = document.createElement("div");
+      div.classList.add("miembroItem");
+      div.innerHTML = `
+        <img src="${user.Foto}" class="perfil-Ch"><span>${user.Nom_user} ${user.Ape_user}</span>
+        <button class="btnEliminar" title="Eliminar miembro"><i class="fa-solid fa-x"></i></button>
+      `;
+      listaMiembros.appendChild(div);
+
+      div.querySelector(".btnEliminar").addEventListener("click", () => {
+        if(confirm(`¿Seguro que quieres eliminar a ${user.Nom_user} ${user.Ape_user}?`)){
+          miembrosSeleccionados.splice(index, 1);
+          actualizarListaMiembros();
+        }
+      });
+    });
+  }
+
+  // ----------------- CREAR GRUPO -----------------
+  btnConfirmar.addEventListener("click", async () => {
+    const nombreG = inputNombreGrupo.value.trim();
+    const messageBox = document.getElementById("messageBox");
+    const errorMsg = document.getElementById("errorMsg");
+
+    if(!nombreG){
+      errorMsg.textContent = "Debes escribir un nombre para el grupo.";
+      messageBox.style.display = "block";
+      return;
+    }
+
+    const usuarioCreador = username;
+    const miembrosFinales = [{ Usuario: usuarioCreador}].concat(miembrosSeleccionados);
+
+    if(miembrosFinales.length < 3){
+      errorMsg.textContent = "El grupo debe tener al menos 3 miembros";
+      messageBox.style.display = "block";
+      return;
+    }
+
+    try{
+      const res = await fetch("/chats/crearGrupo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json"},
+        body: JSON.stringify({
+          nombreG,
+          miembros: miembrosFinales.map(u => u.Usuario)
+        })
+      });
+      const data = await res.json();
+
+      if(data.error) return alert(data.error);
+
+      errorMsg.textContent = `Grupo ${nombreG} ha sido creado con exito.`;
+      messageBox.style.display = "block";
+
+      miembrosSeleccionados = [];
+      actualizarListaMiembros();
+      inputNombreGrupo.value = "";
+      resultNewG.innerHTML = "";
+      
+
+      //Cargar mi lista de chats
+      cargarMisChats();
+    }catch(err){
+      console.error("Error al crear grupo:", err);
+    }
+  });
+
   // ------------------ CARGAR CHATS EXISTENTES ------------------
-  async function cargarMisChats(){
+  async function cargarMisChats() {
     try {
       const res = await fetch("/chats/misChats");
       const chats = await res.json();
       const listaChats = document.getElementById("listaChats");
       listaChats.innerHTML = "";
 
-      if(chats.length === 0){
+      if (chats.length === 0) {
         const span = document.createElement("span");
         span.textContent = "No tienes chats todavía";
         span.style.color = "#e0e6f1";
@@ -338,23 +461,47 @@ document.addEventListener("DOMContentLoaded", () => {
       chats.forEach(chat => {
         const chatBtn = document.createElement("button");
         chatBtn.classList.add("chatItem");
-        chatBtn.innerHTML = `
-          <div class="img-container">
-            <img src="${chat.Foto}" class="perfil-Ch">
-            <span class="status-dot online"></span>
-          </div>
-          <span>${chat.Nom_user} ${chat.Ape_user}</span>
-          <small class="ult-mensaje">${chat.ult_mensaje || ""}</small>
-        `;
+
+        if (chat.tipo === "individual") {
+          // Chat individual
+          chatBtn.innerHTML = `
+            <div class="img-container">
+              <img src="${chat.Foto}" class="perfil-Ch">
+              <span class="status-dot online"></span>
+            </div>
+            <span>${chat.Nom_user} ${chat.Ape_user}</span>
+            <small class="ult-mensaje">${chat.ult_mensaje || ""}</small>
+          `;
+        } else if (chat.tipo === "grupo") {
+          // Chat de grupo
+          chatBtn.innerHTML = `
+            <div class="img-container">
+              <span class="grupo-icon" style="font-size: 20px; color:#00bfff; position:relative; top:2px;"><i class="fa-solid fa-people-group"></i></span>
+            </div>
+            <span>${chat.nombreG}&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <small class="ult-mensaje">${chat.miembros.join(", ")}</small>
+          `;
+        }
+
         listaChats.appendChild(chatBtn);
 
         chatBtn.addEventListener("click", () => {
           chatId = chat.id_Chat;
           sessionStorage.setItem("chatId", chatId);
-          document.getElementById("chatNombre").innerHTML = chat.Nom_user + " " + chat.Ape_user + "&nbsp;&nbsp;&nbsp;&nbsp;" + chat.CantPuntos + " pts";
+
+          //nuevo
+          currentChatId = chat.id_Chat;
+          currentChatTipo = chat.tipo;
+
+          if (chat.tipo === "individual") {
+            document.getElementById("chatNombre").innerHTML =
+              `${chat.Nom_user} ${chat.Ape_user}&nbsp;&nbsp;&nbsp;&nbsp;${chat.CantPuntos || 0} pts`;
+          } else if (chat.tipo === "grupo") {
+            document.getElementById("chatNombre").textContent = chat.nombreG;
+          }
+
           chatBox.style.display = "block";
           bienvenida.style.display = "none";
-
 
           if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
             document.querySelector(".Chats").style.display = "none";
@@ -365,25 +512,34 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelector(".Chats").style.display = "none";
             document.querySelector(".chatB").style.display = "block";
           }
-          
+
+          // Unirse al chat por socket y cargar mensajes
           socket.emit("joinChat", chatId, username);
           cargarMensajes(chatId);
         });
       });
-    } catch(err){
+    } catch (err) {
       console.error("Error al cargar mis chats:", err);
     }
   }
+  
   cargarMisChats();
 
   // ------------------ SOCKET: RECIBIR MENSAJES ------------------
   socket.on("newMessage", (msg) => {
+    console.log("Mensaje recibido del servidor:", msg);
     const chatMessages = getChatMessagesDiv();
     if (!chatMessages) return;
 
     const div = document.createElement("div");
     div.classList.add("message");
     if(msg.remitente === username) div.classList.add("sent");
+
+    if (msg.tipoChat === "grupo" && msg.remitente !== username) {
+      const nameTag = document.createElement("strong");
+      nameTag.textContent = (msg.remitenteNom || msg.Nom_user || "Usuario") + ": ";
+      div.appendChild(nameTag);
+    }
 
     if(msg.tipo === "archivo"){
       const archivoDiv = document.createElement("div");
@@ -415,7 +571,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       div.appendChild(archivoDiv);
     }else{
-      div.textContent = msg.contenido;
+      const span = document.createElement("span");
+      span.textContent = msg.contenido;
+      div.appendChild(span);
     }
 
     chatMessages.appendChild(div);
@@ -428,7 +586,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(!contenido) return;
     if(!chatId) return console.error("No hay chat abierto");
 
-    socket.emit("sendMessage", {idChat: chatId, remitente: username, contenido});
+    socket.emit("sendMessage", {idChat: chatId, remitente: username, contenido, tipo: "texto"});
     textarea.value = "";
   });
 
@@ -441,9 +599,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     chatMessages.innerHTML = "";
     mensajes.forEach(msg => {
+      console.log("Mensaje recibido del servidor:", msg);
       const div = document.createElement("div");
       div.classList.add("message");
       if(msg.remitente === username) div.classList.add("sent");
+
+      if (msg.tipoChat === "grupo" && msg.remitente !== username) {
+        const nameTag = document.createElement("strong");
+        nameTag.textContent = (msg.remitenteNom || msg.Nom_user || "Usuario") + ": ";
+        div.appendChild(nameTag);
+      }
 
       if(msg.tipo === "archivo"){
         const archivoDiv = document.createElement("div");
@@ -475,7 +640,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         div.appendChild(archivoDiv);
       }else{
-        div.textContent = msg.contenido;
+        const span = document.createElement("span");
+        span.textContent = msg.contenido;
+        div.appendChild(span);
       }
 
       chatMessages.appendChild(div);
@@ -488,41 +655,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   //--------------------VIDEOLLAMADA------------------------------------------
-  // async function startCall(isInitiator = false) {
-  //   //chatMessages.style.display = "none";
-  //   videoCont.style.display = "block";
-  //   localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true});
-  //   myVideo.srcObject = localStream;
-
-  //   //const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302"}]};
-  //   peerConnection = new RTCPeerConnection(config);
-
-  //   //DEPURACION
-  //   // Log para ver estado de ICE
-  //   peerConnection.oniceconnectionstatechange = () => {
-  //     console.log(`[ICE STATE]`, peerConnection.iceConnectionState);
-  //   };
-
-  //   localStream.getTracks().forEach(track => peerConnection.addTrack(track,localStream));
-
-  //   peerConnection.ontrack = (event) => {
-  //     remoteVideo.srcObject = event.streams[0];
-  //   };
-
-  //   peerConnection.onicecandidate = (event) => {
-  //     if(event.candidate){
-  //       console.log("[ICE CANDIDATE]", event.candidate.candidate); //d
-  //       socket.emit("ice-candidate", {candidate: event.candidate, chatId});
-  //     }
-  //   };
-
-  //   if(isInitiator){
-  //     const offer = await peerConnection.createOffer();
-  //     await peerConnection.setLocalDescription(offer);
-  //     socket.emit("offer", {offer, chatId});
-  //   }
-  // }
-
   btnCall.addEventListener("click", () => {
     socket.emit("call-user", chatId);
     startCall(true);
@@ -580,40 +712,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // socket.on("offer", async (data) => {
-  //   await startCall(false);
-  //   await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
-  //   const answer = await peerConnection.createAnswer();
-  //   await peerConnection.setLocalDescription(answer);
-  //   socket.emit("answer", {answer, chatId});
-  // });
-  // socket.on("offer", async data => {
-  //   await startCall(false); // el receptor inicia la conexión
-  //   await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
-  //   const answer = await peerConnection.createAnswer();
-  //   await peerConnection.setLocalDescription(answer);
-  //   socket.emit("answer", { chatId, answer });
-  // });
-
-  // // socket.on("answer", async (data) => {
-  // //   await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-  // // });
-  // socket.on("answer", async data => {
-  //   await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-  // });
-
-  // // socket.on("ice-candidate", async (data) => {
-  // //   if(!peerConnection) return;
-  // //   await peerConnection.addIceCandidate(data.candidate);
-  // // });
-  // socket.on("ice-candidate", async data => {
-  //   try {
-  //     await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
-  //   } catch (e) {
-  //     console.error("Error al agregar ICE candidate:", e);
-  //   }
-  // });
-
   let pendingCandidates = []; // buffer temporal
 
   socket.on("offer", async data => {
@@ -663,21 +761,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // socket.on("hang-up", () => {
-  //   if(localStream) localStream.getTracks().forEach(track => track.stop());
-  //   if(peerConnection) peerConnection.close();
-  //   videoCont.style.display = "none";
-  //   //chatMessages.style.display = "block";
-  // });
-
-  // //FUNCIONAMIENTO BOTONES
-  // hangUpBtn.addEventListener("click", () => {
-  //   if(localStream) localStream.getTracks().forEach(track => track.stop());
-  //   if(peerConnection) peerConnection.close();
-  //   videoCont.style.display = "none";
-  //   //chatMessages.style.display = "block";
-  //   socket.emit("hang-up", chatId);
-  // });
   //--------------------Colgar llamada--------------------------
   hangUpBtn.addEventListener("click", () => {
     endCall();
@@ -699,14 +782,6 @@ document.addEventListener("DOMContentLoaded", () => {
     videoCont.style.display = "none";
   }
 
-
-  // muteBtn.addEventListener("click", () => {
-  //   isMuted = !isMuted;
-  //   if(localStream) localStream.getAudioTracks()[0].enabled = !isMuted;
-  //    muteBtn.innerHTML = isMuted 
-  //   ? '<i class="fa-solid fa-microphone-slash"></i>' 
-  //   : '<i class="fa-solid fa-microphone"></i>';
-  // });
   muteBtn.addEventListener("click", () => {
     if (!localStream) return;
     isMuted = !isMuted;
