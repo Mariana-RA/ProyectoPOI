@@ -380,7 +380,7 @@ td.drawCol input {
 }
 
 /* ESTILOS PARA TELEFONOS */
-/* @media (max-width: 767px) {
+@media (max-width: 767px) {
 
   .barraNav {
     width: 80px;
@@ -438,74 +438,8 @@ td.drawCol input {
     bottom: 30px;
     width: 120px;
   }
-} */
- @media (max-width: 767px) {
-
-  html, body {
-    height: 100dvh; /* Usa toda la altura visible, evitando saltos con el teclado */
-    overflow: hidden; /* Evita desplazamientos innecesarios */
-  }
-
-  .barraNav {
-    width: 80px;
-    padding: 6px;
-    height: 100dvh; /* Mantiene la barra del mismo alto que la pantalla */
-  }
-
-  .btn-contenido {
-    font-size: 12px;
-    padding: 6px;
-  }
-
-  .perfilUserH {
-    margin-left: 10px;
-  }
-
-  .perfil-imgH {
-    width: 35px;
-  }
-
-  .tb-Quiniela {
-    max-height: calc(100dvh - 150px); /* Deja espacio para botones u otros elementos */
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch; /* Desplazamiento fluido en móviles */
-  }
-
-  .tb-Quiniela table {
-    width: 100%;
-    min-width: 500px;
-    border-collapse: collapse;
-    font-size: 12px;
-  }
-
-  td, th {
-    font-size: 12px;
-    padding: 6px;
-    text-align: center;
-    word-wrap: break-word;
-  }
-
-  .scoreInput {
-    width: 35px;
-    font-size: 12px;
-    padding: 4px;
-  }
-
-  .btnQuiniela {
-    width: 80%;
-    font-size: 16px;
-    position: fixed;
-    left: 10%;
-    bottom: 80px; /* Espacio seguro sobre la barra del sistema */
-    z-index: 100;
-  }
-
-  .menuH {
-    left: 20px;
-    bottom: 30px;
-    width: 120px;
-  }
 }
+
 
 
 

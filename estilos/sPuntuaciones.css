@@ -327,7 +327,7 @@ body {
 }
 
 /* ESTILOS PARA TELEFONOS */
-/* @media (max-width: 767px) {
+@media (max-width: 767px) {
 
   body, html {
     height: 100%;
@@ -440,125 +440,8 @@ body {
   .milestone{
     font-size: 12px;
   }
-} */
-@media (max-width: 767px) {
-
-  html, body {
-    height: 100dvh;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-  }
-
-  .container {
-    display: flex;
-    height: 100dvh;
-    overflow: hidden;
-    flex-direction: row;
-  }
-
-  .barraNav {
-    width: 80px;
-    padding: 6px;
-    flex-shrink: 0;
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    height: 100dvh;
-    background: rgba(10, 42, 136, 0.9);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 10;
-  }
-
-  .btn-contenido {
-    font-size: 12px;
-    padding: 6px;
-  }
-
-  .perfilUserH {
-    margin-left: 0;
-  }
-
-  .perfil-imgH {
-    width: 35px;
-  }
-
-  .menuH {
-    left: 100px;
-    bottom: 25px;
-    width: 110px;
-  }
-
-  .contenidoRS {
-    margin-left: 80px;
-    width: calc(100% - 80px);
-    height: 100dvh;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    scroll-behavior: smooth;
-    padding-bottom: 80px;
-  }
-
-  .status-container {
-    width: 90%;
-    max-width: 400px;
-    margin: 20px auto;
-    margin-left: 10%;
-    text-align: center;
-    position: relative;
-    background: rgba(255,255,255,0.05);
-    padding: 15px;
-    border-radius: 10px;
-  }
-
-  .copa {
-    width: 180px;
-    height: auto;
-  }
-
-  .copa-left,
-  .copa-right {
-    position: static;
-    margin: 0 auto;
-  }
-
-  .ranking-container {
-    width: 90%;
-    text-align: center;
-  }
-
-  .ranking-list {
-    padding: 0;
-    margin: 10px 0;
-    max-height: calc(100dvh - 220px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .ranking-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 6px;
-    margin-bottom: 6px;
-    font-size: 13px;
-  }
-
-  .milestone {
-    font-size: 12px;
-  }
 }
+
 
 
 
