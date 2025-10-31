@@ -396,6 +396,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nombreG = inputNombreGrupo.value.trim();
     const messageBox = document.getElementById("messageBox");
     const errorMsg = document.getElementById("errorMsg");
+    const nuevoGrupoPanel = document.getElementById("NewGPanel");
 
     if(!nombreG){
       errorMsg.textContent = "Debes escribir un nombre para el grupo.";
@@ -433,6 +434,7 @@ document.addEventListener("DOMContentLoaded", () => {
       inputNombreGrupo.value = "";
       resultNewG.innerHTML = "";
       
+      nuevoGrupoPanel.style.display = "none";
 
       //Cargar mi lista de chats
       cargarMisChats();
