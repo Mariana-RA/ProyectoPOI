@@ -155,6 +155,8 @@ audioInput.addEventListener("change", async (e) => {
 let chatId = sessionStorage.getItem("chatId") || null;
 const socket = io();
 
+socket.emit("userConnected", username);
+
 //--------------------VIDEOLLAMADA------------------------------------------
 const btnCall = document.querySelector(".btnCall");
 const videoCont = document.getElementById("videoContainer");
@@ -173,6 +175,8 @@ let currentChatId = null;
 
 const SECRET_KEY = "mySuuperSecretKeey1234567890!";
 let cifrarMensajes = false;
+
+const usuariosOnline = {};
 
 //const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 // const config = {
@@ -305,12 +309,21 @@ document.addEventListener("DOMContentLoaded", () => {
             btnChat.classList.add("chatItem");
             btnChat.dataset.chatId = chatId;
             btnChat.innerHTML = `
-              <div class="img-container">
+              <div class="img-container" data-username="${chat.Usuario}">
                 <img src="${chatData.Foto}" class="perfil-Ch">
-                <span class="status-dot online"></span>
+                <span class="status-dot"></span>
               </div>
               <span>${chatData.nombre}</span>
             `;
+              const dot = btnChat.querySelector(".status-dot");
+            if (dot) {
+              if (usuariosOnline[chat.Usuario]) {
+                dot.classList.add("online");
+              } else {
+                dot.classList.add("offline");
+              }
+            }
+
             listaChats.prepend(btnChat);
 
             btnChat.addEventListener("click", () => {
@@ -518,13 +531,23 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
           chatBtn.innerHTML = `
-            <div class="img-container">
+            <div class="img-container" data-username="${chat.Usuario}">
               <img src="${chat.Foto}" class="perfil-Ch">
-              <span class="status-dot online"></span>
+              <span class="status-dot"></span>
             </div>
             <span>${chat.Nom_user} ${chat.Ape_user}</span>
             <small class="ult-mensaje">${ultimoMensaje}</small>
           `;
+
+          const dot = chatBtn.querySelector(".status-dot");
+          if (dot) {
+            if (usuariosOnline[chat.Usuario]) {
+              dot.classList.add("online");
+            } else {
+              dot.classList.add("offline");
+            }
+          }
+
         } else if (chat.tipo === "grupo") {
           // Chat de grupo
           chatBtn.innerHTML = `
@@ -788,6 +811,36 @@ document.addEventListener("DOMContentLoaded", () => {
   function getChatMessagesDiv() {
     return document.querySelector(".chatMessages");
   }
+
+  socket.on("userStatusChange", ({ username, status }) => {
+    console.log("[Evento recibido] userStatusChange:", username, status);
+
+    usuariosOnline[username] = (status === "online");
+
+    const imgContainers = document.querySelectorAll(`.img-container[data-username="${username}"]`);
+
+    imgContainers.forEach(container => {
+        const dot = container.querySelector(".status-dot");
+        if (!dot) return;
+        dot.classList.toggle("online", status === "online");
+        dot.classList.toggle("offline", status !== "online");
+    });
+  });
+
+  socket.on("usersOnlineList", (users) => {
+    users.forEach(username => {
+        usuariosOnline[username] = true;
+
+        const containers = document.querySelectorAll(`.img-container[data-username="${username}"]`);
+        containers.forEach(dotContainer => {
+            const dot = dotContainer.querySelector(".status-dot");
+            if (dot) {
+                dot.classList.add("online");
+                dot.classList.remove("offline");
+            }
+        });
+    });
+  });
 
   //--------------------VIDEOLLAMADA------------------------------------------
   btnCall.addEventListener("click", () => {

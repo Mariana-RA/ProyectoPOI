@@ -193,10 +193,23 @@ app.get('/logout', (req, res) => {
 });
 
 const chatSockets = {};
+const onlineUsers = {};
 
 //socket.io
 io.on("connection", (socket) => {
   console.log("Usuario conectado al chat.");
+
+  socket.on("userConnected", (username) => {
+    if(!username) return;
+
+    onlineUsers[username] = socket.id;
+    chatSockets[socket.id] = { username };
+
+    io.emit("userStatusChange", { username, status: "online"});
+
+    const usersAlreadyOnline = Object.keys(onlineUsers).filter(u => u !== username);
+    socket.emit("usersOnlineList", usersAlreadyOnline);
+  });
 
   socket.on("joinChat", (chatId, username) => {
     socket.join(chatId);
@@ -290,6 +303,12 @@ io.on("connection", (socket) => {
   // });
   socket.on("disconnect", () => {
     const info = chatSockets[socket.id];
+
+    if(info && info.username){
+      delete onlineUsers[info.username];
+      io.emit("userStatusChange", { username: info.username, status: "offline"});
+    }
+
     if (info && info.chatId) {
       io.to(info.chatId).emit("hang-up");
     }

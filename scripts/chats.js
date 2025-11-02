@@ -141,6 +141,7 @@ router.get("/misChats", isAuthenticated, async (req, res) => {
         `, [chat.id_Chat, usuarioLog]);
 
         if (otros.length > 0) {
+          chat.Usuario = otros[0].Usuario;
           chat.Nom_user = otros[0].Nom_user;
           chat.Ape_user = otros[0].Ape_user;
           chat.Foto = otros[0].Foto;
