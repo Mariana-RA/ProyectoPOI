@@ -3,6 +3,7 @@ const router = express.Router();
 const pool = require("./conexion");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
+const nodemailer = require("nodemailer");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -64,7 +65,7 @@ router.post("/getOrCreateChat", isAuthenticated, async (req, res) => {
 
         if(chatExist.length > 0){
             const [userInfo] = await pool.query(
-                `SELECT Nom_user, Ape_user, Foto FROM usuarios WHERE Usuario = ?`,
+                `SELECT Nom_user, Ape_user, Foto, CantPuntos FROM usuarios WHERE Usuario = ?`,
                 [UserBusq]
             );
 
@@ -72,6 +73,7 @@ router.post("/getOrCreateChat", isAuthenticated, async (req, res) => {
                 idChat: chatExist[0].id_Chat,
                 nombre: userInfo[0].Nom_user + " " + userInfo[0].Ape_user,
                 Foto: userInfo[0].Foto,
+                CantPuntos: userInfo[0].CantPuntos, 
                 Usuario: UserBusq
             });
         }
@@ -170,19 +172,6 @@ router.get("/misChats", isAuthenticated, async (req, res) => {
   }
 });
 
-// router.get("/mensajes/:idChat", isAuthenticated, async (req, res) => {
-//     try{
-//         const {idChat} = req.params;
-//         const [mensajes] = await pool.query(
-//             "SELECT remitente, contenido, tipo, fecha_M FROM mensajes WHERE id_Chat = ? ORDER BY fecha_M ASC",
-//             [idChat]
-//         );
-//         res.json(mensajes);
-//     }catch(err){
-//         console.error("Error al obtener mensajes:", err);
-//         res.status(500).json({error: "Error al obtener mensajes"});
-//     }
-// });
 router.get("/mensajes/:idChat", isAuthenticated, async (req, res) => {
   try {
     const { idChat } = req.params;
@@ -293,5 +282,54 @@ router.put("/cifrado/:idChat", async (req, res) => {
   res.json({ success: true });
 });
 
+//CORREO
+router.get("/usuarioEmail/:idChat", isAuthenticated, async (req, res) => {
+  try{
+      const { idChat } = req.params;
+      const usuarioLog = req.session.user.username;
+
+      const [rows] = await pool.query(`
+        SELECT u.Usuario, u.Nom_user, u.Ape_user, u.correo
+        FROM chat_users cu
+        JOIN usuarios u ON cu.id_Usuario = u.Usuario
+        WHERE cu.id_Chat = ? AND u.Usuario <> ?
+        LIMIT 1
+      `, [idChat, usuarioLog]);
+
+      if(rows.length === 0) return json.status(404).json({ error: "Usuario no encontrado"});
+
+      res.json(rows[0]);
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: "Error al obtener el correo del usuario"});
+  }
+});
+
+router.post("/sendEmail", isAuthenticated, async (req,res) => {
+  const {to, subject, body} = req.body;
+  if(!to || !subject || !body) return res.status(400).json({error: "Faltan datos"});
+
+  try{
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      }
+    });
+
+    await transporter.sendMail({
+      from: `"${req.session.user.Nom_user} ${req.session.user.Ape_user}" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      text: body,
+    });
+
+    res.json({ok:true});
+  }catch(err){
+    console.error("Error al enviar correo:", err);
+    res.status(500).json({error: "Error al enviar correo"});
+  }
+});
 
 module.exports = router;

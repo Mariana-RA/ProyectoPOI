@@ -63,6 +63,7 @@ document.addEventListener("click", (e) => {
 //PANEL DE REDACTAR CORREO
 const btnCorreo = document.querySelector(".btnCorreo");
 const emailCont = document.querySelector(".emailCont");
+const closeEmailBtn = document.getElementById("closeEmailBtn");
 
 // Abrir el panel al hacer click en el botón
 btnCorreo.addEventListener("click", (e) => {
@@ -71,15 +72,10 @@ btnCorreo.addEventListener("click", (e) => {
     emailCont.style.display === "block" ? "none" : "block";
 });
 
-// Cerrar al hacer click fuera del panel
-document.addEventListener("click", (e) => {
-  if (
-    emailCont.style.display === "block" &&
-    !emailCont.contains(e.target) &&
-    e.target !== btnCorreo
-  ) {
-    emailCont.style.display = "none";
-  }
+// Cerrar al hacer click en en btn de tacha
+closeEmailBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  emailCont.style.display = "none";
 });
 
 //FILEBTN ARCHIVOS
@@ -148,6 +144,48 @@ audioInput.addEventListener("change", async (e) => {
     contenido: data.url,
     tipo: "archivo"
   });
+});
+
+//CORREO
+const sendEmailBtn = document.querySelector(".sendEmailBtn");
+sendEmailBtn.addEventListener("click", async () => {
+  const userDest = document.querySelector(".userDest");
+  const to = userDest.dataset.email;
+  const subject = document.getElementById("emailSubject").value.trim();
+  const body = document.getElementById("emailBody").value.trim();
+
+  const messageBox = document.getElementById("messageBox");
+  const errorMsg = document.getElementById("errorMsg");
+
+  if(!to || !subject || !body){
+    errorMsg.textContent = "favor de completar todos los campos";
+    messageBox.style.display = "block";
+    return;
+  }
+
+  try{
+    const res = await fetch("/chats/sendEmail", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ to, subject, body }),
+    });
+    const data = await res.json();
+
+    if(data.ok){
+      errorMsg.textContent = "Correo enviado con éxito";
+      messageBox.style.display = "block";
+
+      document.getElementById("emailSubject").value = "";
+      document.getElementById("emailBody").value = "";
+      emailCont.style.display = "none";
+    }else{
+      errorMsg.textContent = "Error al enviar correos";
+      messageBox.style.display = "block";
+    }
+  }catch(err){
+    console.error(err);
+    alert("Error al enviar correo");
+  }
 });
 
 //-------------------- BACKEND CHATS ----------------------------------
@@ -290,7 +328,10 @@ document.addEventListener("DOMContentLoaded", () => {
           // ---- ACTUALIZAR CHAT ABIERTO ----
           chatId = chatData.idChat;
           sessionStorage.setItem("chatId", chatId);
-          document.getElementById("chatNombre").textContent = chatData.nombre;
+
+          cargarEmailDestinario(chatId);
+
+          document.getElementById("chatNombre").innerHTML = `${chatData.nombre}&nbsp;&nbsp;&nbsp;&nbsp;${chatData.CantPuntos || 0} pts`;
           chatBox.style.display = "block";
           bienvenida.style.display = "none";
           //DEPURAR
@@ -304,7 +345,13 @@ document.addEventListener("DOMContentLoaded", () => {
           const mensajeSinChats = listaChats.querySelector(".sin-chats");
           if(mensajeSinChats) mensajeSinChats.remove();
 
-          if(!Array.from(listaChats.children).some(btn => btn.dataset.chatId == chatId)){
+          const chatIdStr = String(chatId).trim();
+
+          const yaExiste = Array.from(listaChats.children).some(
+            btn => String(btn.dataset.chatId).trim() === chatIdStr
+          );
+
+          if(!yaExiste){
             const btnChat = document.createElement("button");
             btnChat.classList.add("chatItem");
             btnChat.dataset.chatId = chatId;
@@ -327,8 +374,14 @@ document.addEventListener("DOMContentLoaded", () => {
             listaChats.prepend(btnChat);
 
             btnChat.addEventListener("click", () => {
+              document.querySelectorAll(".chatItem.active").forEach(b => b.classList.remove("active"));
+              btnChat.classList.add("active");
+
               chatId = chatData.idChat;
               sessionStorage.setItem("chatId", chatId);
+
+              cargarEmailDestinario(chatId);
+
               document.getElementById("chatNombre").textContent = chatData.nombre;
               chatBox.style.display = "block";
               bienvenida.style.display = "none";
@@ -495,6 +548,24 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   });
 
+  //------------------- CORREO ----------------------
+  async function cargarEmailDestinario(chatId) {
+    if(!chatId) return;
+
+    try{
+      const res = await fetch(`/chats/usuarioEmail/${chatId}`);
+      const data = await res.json();
+      if(data.error) return console.error(data.error);
+
+      const userDest = document.querySelector(".userDest");
+      userDest.textContent = `${data.Nom_user} ${data.Ape_user}`;
+      userDest.dataset.email = data.correo;
+    }catch(err){
+      console.error("Error al cargar destinatario:", err);
+    }
+    
+  }
+
   // ------------------ CARGAR CHATS EXISTENTES ------------------
   async function cargarMisChats() {
     try {
@@ -515,6 +586,8 @@ document.addEventListener("DOMContentLoaded", () => {
       chats.forEach(chat => {
         const chatBtn = document.createElement("button");
         chatBtn.classList.add("chatItem");
+
+        chatBtn.dataset.chatId = chat.id_Chat; 
 
         if (chat.tipo === "individual") {
           // Chat individual
@@ -562,8 +635,13 @@ document.addEventListener("DOMContentLoaded", () => {
         listaChats.appendChild(chatBtn);
 
         chatBtn.addEventListener("click", () => {
+          document.querySelectorAll(".chatItem.active").forEach(b => b.classList.remove("active"));
+          chatBtn.classList.add("active");
+
           chatId = chat.id_Chat;
           sessionStorage.setItem("chatId", chatId);
+
+          cargarEmailDestinario(chatId);
 
           const chkCifrar = document.getElementById("encryptMessages");
           chkCifrar.checked = chat.st_Cifrado === 1;

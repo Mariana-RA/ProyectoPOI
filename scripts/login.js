@@ -17,7 +17,7 @@ router.post("/validarU", async (req, res) => {
         let passL = datosLogin.txtPass;
 
         let [resultado] = await pool.query(
-            "SELECT Usuario, Contra, Foto FROM usuarios WHERE Usuario = ?",
+            "SELECT Usuario, Contra, Foto, Nom_user, Ape_user FROM usuarios WHERE Usuario = ?",
             [userL]
         );
 
@@ -34,6 +34,8 @@ router.post("/validarU", async (req, res) => {
 
         req.session.user = {
             username: usuario.Usuario,
+            Nom_user: usuario.Nom_user,
+            Ape_user: usuario.Ape_user,
             fotoPerfil: usuario.Foto
         };
 
