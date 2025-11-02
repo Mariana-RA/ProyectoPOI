@@ -211,9 +211,12 @@ io.on("connection", (socket) => {
     const tipoMensaje = tipo || "texto";
 
     try{
+      const [chatRows] = await pool.query("SELECT st_Cifrado FROM chat WHERE id_Chat = ?", [idChat]);
+      const cifradoActivo = chatRows[0]?.st_Cifrado === 1;
+
       const [newMensaje] = await pool.query(
-        "INSERT INTO mensajes (id_Chat, remitente, tipo, contenido) VALUES(?,?,?,?)",
-        [idChat, remitente,tipoMensaje, contenido]
+        "INSERT INTO mensajes (id_Chat, remitente, tipo, contenido, msgCifrado) VALUES(?,?,?,?,?)",
+        [idChat, remitente,tipoMensaje, contenido, cifradoActivo]
       );
 
       const messageId = newMensaje.insertId;
@@ -239,7 +242,8 @@ io.on("connection", (socket) => {
         tipo: resp.tipoMensaje,
         contenido: resp.contenido,
         fecha_M: resp.fecha_M,
-        tipoChat: resp.tipoChat   
+        tipoChat: resp.tipoChat,
+        cifrado: cifradoActivo  
       };
 
       //io.to(idChat).emit("newMessage", {remitente, contenido, tipo: tipoMensaje});

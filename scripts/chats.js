@@ -111,12 +111,14 @@ router.get("/misChats", isAuthenticated, async (req, res) => {
         c.id_Chat,
         c.tipo,
         c.nombreG,
+        c.st_Cifrado,
         lm.contenido AS ult_mensaje,
-        lm.fecha_M AS ult_fecha
+        lm.fecha_M AS ult_fecha,
+        lm.msgCifrado AS msgCifrado
       FROM chat c
       JOIN chat_users cu ON cu.id_Chat = c.id_Chat
       LEFT JOIN (
-        SELECT m1.id_Chat, m1.contenido, m1.fecha_M
+        SELECT m1.id_Chat, m1.contenido, m1.fecha_M, m1.msgCifrado
         FROM mensajes m1
         INNER JOIN (
           SELECT id_Chat, MAX(fecha_M) AS ult_fecha
@@ -182,7 +184,7 @@ router.get("/mensajes/:idChat", isAuthenticated, async (req, res) => {
   try {
     const { idChat } = req.params;
     const [mensajes] = await pool.query(
-      `SELECT m.remitente, u.Nom_user, u.Ape_user, m.contenido, m.tipo, m.fecha_M, c.tipo AS tipoChat
+      `SELECT m.remitente, u.Nom_user, u.Ape_user, m.contenido, m.tipo, m.fecha_M, m.msgCifrado AS cifrado, c.tipo AS tipoChat 
        FROM mensajes m
        JOIN usuarios u ON m.remitente = u.Usuario
        JOIN chat c ON m.id_Chat = c.id_Chat
@@ -278,6 +280,14 @@ router.post("/crearGrupo", isAuthenticated, async (req, res) => {
         console.error("Error en /crearGrupo:", err);
         res.status(500).json({error: "Error al crear el grupo"});
     }
+});
+
+router.put("/cifrado/:idChat", async (req, res) => {
+  const { idChat } = req.params;
+  const { st_Cifrado } = req.body;
+
+  await pool.query("UPDATE chat SET st_Cifrado = ? WHERE id_Chat = ?", [st_Cifrado, idChat]);
+  res.json({ success: true });
 });
 
 

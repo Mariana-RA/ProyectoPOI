@@ -171,6 +171,9 @@ let isMuted = false;
 let currentChatTipo = null;
 let currentChatId = null;
 
+const SECRET_KEY = "mySuuperSecretKeey1234567890!";
+let cifrarMensajes = false;
+
 //const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 // const config = {
 //   iceTransportPolicy: "all",
@@ -467,6 +470,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  //------------------- CIFRADO DE MENSAJES ----------------------
+  const chkCifrar = document.getElementById("encryptMessages");
+  chkCifrar.addEventListener("change", async () => {
+    cifrarMensajes = chkCifrar.checked;
+    
+    await fetch(`/chats/cifrado/${chatId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ st_Cifrado: cifrarMensajes ? 1 : 0 })
+  });
+  });
+
   // ------------------ CARGAR CHATS EXISTENTES ------------------
   async function cargarMisChats() {
     try {
@@ -490,13 +505,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (chat.tipo === "individual") {
           // Chat individual
+
+          let ultimoMensaje = chat.ult_mensaje || "";
+          console.log(chat.msgCifrado, chat.ult_mensaje);
+          if (chat.msgCifrado && chat.ult_mensaje) {
+            try {
+              const bytes = CryptoJS.AES.decrypt(chat.ult_mensaje, SECRET_KEY);
+              ultimoMensaje = bytes.toString(CryptoJS.enc.Utf8);
+            } catch (err) {
+              console.error("Error al descifrar último mensaje:", err);
+            }
+          }
+
           chatBtn.innerHTML = `
             <div class="img-container">
               <img src="${chat.Foto}" class="perfil-Ch">
               <span class="status-dot online"></span>
             </div>
             <span>${chat.Nom_user} ${chat.Ape_user}</span>
-            <small class="ult-mensaje">${chat.ult_mensaje || ""}</small>
+            <small class="ult-mensaje">${ultimoMensaje}</small>
           `;
         } else if (chat.tipo === "grupo") {
           // Chat de grupo
@@ -514,6 +541,10 @@ document.addEventListener("DOMContentLoaded", () => {
         chatBtn.addEventListener("click", () => {
           chatId = chat.id_Chat;
           sessionStorage.setItem("chatId", chatId);
+
+          const chkCifrar = document.getElementById("encryptMessages");
+          chkCifrar.checked = chat.st_Cifrado === 1;
+          cifrarMensajes = chkCifrar.checked;
 
           //nuevo
           currentChatId = chat.id_Chat;
@@ -562,7 +593,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ------------------ SOCKET: RECIBIR MENSAJES ------------------
   socket.on("newMessage", (msg) => {
+    if (msg.remitente === username) return;
+
     console.log("Mensaje recibido del servidor:", msg);
+
     const chatMessages = getChatMessagesDiv();
     if (!chatMessages) return;
 
@@ -608,15 +642,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }else{
       const span = document.createElement("span");
 
-      if (msg.contenido.startsWith("https://www.google.com/maps?q=")) {
+      let contenidoDescifrado = msg.contenido;
+
+      if(msg.cifrado){
+        try{
+          const bytes = CryptoJS.AES.decrypt(msg.contenido, SECRET_KEY);
+          contenidoDescifrado = bytes.toString(CryptoJS.enc.Utf8);
+        }catch(err){
+          console.error("Error al descifrar el mensaje:",err);
+        }
+      }
+
+      if (contenidoDescifrado.startsWith("https://www.google.com/maps?q=")) {
         const link = document.createElement("a");
-        link.href = msg.contenido;
+        link.href = contenidoDescifrado;
         link.target = "_blank";
         link.innerHTML = `<i class="fa-solid fa-location-dot"></i> Ver ubicación`;
         link.classList.add("download-link");
         span.appendChild(link);
       }else{
-        span.textContent = msg.contenido;
+        span.textContent = contenidoDescifrado;
       }
 
       div.appendChild(span);
@@ -628,13 +673,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ------------------ ENVIAR MENSAJES ------------------
   btnSend.addEventListener("click", () => {
-    const contenido = textarea.value.trim();
-    if(!contenido) return;
+    const contenidoPlano = textarea.value.trim();
+    if(!contenidoPlano) return;
     if(!chatId) return console.error("No hay chat abierto");
 
+    //cifra el mensaje
+    const contenido = cifrarMensajes
+    ? CryptoJS.AES.encrypt(contenidoPlano, SECRET_KEY).toString()
+    : contenidoPlano;
+
     socket.emit("sendMessage", {idChat: chatId, remitente: username, contenido, tipo: "texto"});
+    mostrarMensajePropio(contenidoPlano);
     textarea.value = "";
   });
+
+  function mostrarMensajePropio(texto) {
+    const chatMessages = getChatMessagesDiv();
+    if (!chatMessages) return;
+
+    const div = document.createElement("div");
+    div.classList.add("message", "sent");
+
+    const span = document.createElement("span");
+    span.textContent = texto;
+    div.appendChild(span);
+
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
 
   async function cargarMensajes(chatId){
     const chatMessages = getChatMessagesDiv();
@@ -688,19 +754,31 @@ document.addEventListener("DOMContentLoaded", () => {
       }else{
         const span = document.createElement("span");
 
-        if (msg.contenido.startsWith("https://www.google.com/maps?q=")) {
+        let contenidoDescifrado = msg.contenido;
+
+        if(msg.cifrado){
+          try{
+            const bytes = CryptoJS.AES.decrypt(msg.contenido, SECRET_KEY);
+            const texto = bytes.toString(CryptoJS.enc.Utf8);
+
+            contenidoDescifrado = texto || msg.contenido;
+          }catch(err){
+            console.error("Error al descifrar el mensaje:",err);
+          }
+        }
+
+        if (contenidoDescifrado.startsWith("https://www.google.com/maps?q=")) {
           const link = document.createElement("a");
-          link.href = msg.contenido;
+          link.href = contenidoDescifrado;
           link.target = "_blank";
           link.innerHTML = `<i class="fa-solid fa-location-dot"></i> Ver ubicación`;
           link.classList.add("download-link");
           span.appendChild(link);
         }else{
-          span.textContent = msg.contenido;
+          span.textContent = contenidoDescifrado;
         }
-
-        div.appendChild(span);
-      }
+          div.appendChild(span);
+        }
 
       chatMessages.appendChild(div);
     });
