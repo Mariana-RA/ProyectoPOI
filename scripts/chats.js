@@ -71,7 +71,8 @@ router.post("/getOrCreateChat", isAuthenticated, async (req, res) => {
             return res.json({
                 idChat: chatExist[0].id_Chat,
                 nombre: userInfo[0].Nom_user + " " + userInfo[0].Ape_user,
-                Foto: userInfo[0].Foto
+                Foto: userInfo[0].Foto,
+                Usuario: UserBusq
             });
         }
 
@@ -94,7 +95,8 @@ router.post("/getOrCreateChat", isAuthenticated, async (req, res) => {
         return res.json({
             idChat: chatId,
             nombre: userInfo[0].Nom_user + " " + userInfo[0].Ape_user,
-            Foto: userInfo[0].Foto
+            Foto: userInfo[0].Foto,
+            Usuario: UserBusq
         });
     }catch(err){
         console.error("Error en getOrCreateChat:", err);

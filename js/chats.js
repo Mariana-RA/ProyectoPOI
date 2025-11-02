@@ -309,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnChat.classList.add("chatItem");
             btnChat.dataset.chatId = chatId;
             btnChat.innerHTML = `
-              <div class="img-container" data-username="${chat.Usuario}">
+              <div class="img-container" data-username="${chatData.Usuario}">
                 <img src="${chatData.Foto}" class="perfil-Ch">
                 <span class="status-dot"></span>
               </div>
@@ -317,7 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
               const dot = btnChat.querySelector(".status-dot");
             if (dot) {
-              if (usuariosOnline[chat.Usuario]) {
+              if (usuariosOnline[chatData.Usuario]) {
                 dot.classList.add("online");
               } else {
                 dot.classList.add("offline");
