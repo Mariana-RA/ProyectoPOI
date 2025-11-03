@@ -3,7 +3,8 @@ const router = express.Router();
 const pool = require("./conexion");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
-const nodemailer = require("nodemailer");
+//const nodemailer = require("nodemailer");
+const sgMail = require("@sendgrid/mail");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -310,20 +311,16 @@ router.post("/sendEmail", isAuthenticated, async (req,res) => {
   if(!to || !subject || !body) return res.status(400).json({error: "Faltan datos"});
 
   try{
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      }
-    });
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-    await transporter.sendMail({
-      from: `"${req.session.user.Nom_user} ${req.session.user.Ape_user}" <${process.env.EMAIL_USER}>`,
+    const msg = {
       to,
+      from: `${req.session.user.Nom_user} ${req.session.user.Ape_user} <${process.env.SENDGRID_FROM_EMAIL}>`,
       subject,
       text: body,
-    });
+    };
+
+    await sgMail.send(msg);
 
     res.json({ok:true});
   }catch(err){
