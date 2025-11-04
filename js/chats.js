@@ -624,6 +624,18 @@ document.addEventListener("DOMContentLoaded", () => {
             <small class="ult-mensaje">${ultimoMensaje}</small>
           `;
 
+          if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
+            chatBtn.innerHTML = `
+              <div class="img-container" data-username="${chat.Usuario}">
+                <img src="${chat.Foto}" class="perfil-Ch">
+                <span class="status-dot"></span>
+              </div>
+              <span>${chat.Nom_user} ${chat.Ape_user}</span>
+              <small class="ult-mensaje" style="font-size: 20px;">${ultimoMensaje}</small>
+            `;
+          }
+
+
           const dot = chatBtn.querySelector(".status-dot");
           if (dot) {
             if (usuariosOnline[chat.Usuario]) {
@@ -642,6 +654,17 @@ document.addEventListener("DOMContentLoaded", () => {
             <span>${chat.nombreG}&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <small class="ult-mensaje">${chat.miembros.join(", ")}</small>
           `;
+
+          if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
+            chatBtn.innerHTML = `
+              <div class="img-container">
+                <span class="grupo-icon" style="font-size: 30px; color:#00bfff; position:relative; top:2px;"><i class="fa-solid fa-people-group"></i></span>
+              </div>
+              <span>${chat.nombreG}&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <small class="ult-mensaje" style="font-size: 20px;">${chat.miembros.join(", ")}</small>
+            `;
+          }
+
         }
 
         listaChats.appendChild(chatBtn);
@@ -677,7 +700,7 @@ document.addEventListener("DOMContentLoaded", () => {
               btnMisiones.style.display = "none";
 
               if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
-                btnCorreo.style.marginLeft = "20%";
+                btnCorreo.style.marginLeft = "12%";
               }
           } else if (chat.tipo === "grupo") {
             document.getElementById("chatNombre").textContent = chat.nombreG;
