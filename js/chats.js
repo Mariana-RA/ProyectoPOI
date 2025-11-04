@@ -631,7 +631,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span class="status-dot"></span>
               </div>
               <span>${chat.Nom_user} ${chat.Ape_user}</span>
-              <small class="ult-mensaje" style="font-size: 20px;">${ultimoMensaje}</small>
+              <small class="ult-mensaje" style="font-size: 18px;">${ultimoMensaje}</small>
             `;
           }
 
@@ -658,10 +658,10 @@ document.addEventListener("DOMContentLoaded", () => {
           if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
             chatBtn.innerHTML = `
               <div class="img-container">
-                <span class="grupo-icon" style="font-size: 30px; color:#00bfff; position:relative; top:2px;"><i class="fa-solid fa-people-group"></i></span>
+                <span class="grupo-icon" style="font-size: 40px; color:#00bfff; position:relative; top:2px;"><i class="fa-solid fa-people-group"></i></span>
               </div>
               <span>${chat.nombreG}&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <small class="ult-mensaje" style="font-size: 20px;">${chat.miembros.join(", ")}</small>
+              <small class="ult-mensaje" style="font-size: 18px;">${chat.miembros.join(", ")}</small>
             `;
           }
 
