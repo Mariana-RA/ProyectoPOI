@@ -675,6 +675,10 @@ document.addEventListener("DOMContentLoaded", () => {
               btnCorreo.style.display = "inline-block";
               btnCorreo.style.marginLeft = "59%";
               btnMisiones.style.display = "none";
+
+              if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
+                btnCorreo.style.marginLeft = "20%";
+              }
           } else if (chat.tipo === "grupo") {
             document.getElementById("chatNombre").textContent = chat.nombreG;
 
