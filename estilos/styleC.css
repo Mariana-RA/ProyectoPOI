@@ -1116,6 +1116,23 @@ hr{
   text-overflow: ellipsis;
 }
 
+.closeNewGbtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  color: #2563eb;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.closeNewGbtn:hover {
+  color: #b7f5f5;
+  transform: scale(1.1);
+}
+
 .ult-mensaje{
   color: #e0e6f158;
   display: block;        

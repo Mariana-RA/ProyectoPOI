@@ -91,7 +91,7 @@ router.post("/getOrCreateChat", isAuthenticated, async (req, res) => {
         );
 
         const [userInfo] = await pool.query(
-            `SELECT Nom_user, Ape_user, Foto FROM usuarios WHERE Usuario = ?`,
+            `SELECT Nom_user, Ape_user, Foto, CantPuntos FROM usuarios WHERE Usuario = ?`,
             [UserBusq]
         );
 
@@ -99,6 +99,7 @@ router.post("/getOrCreateChat", isAuthenticated, async (req, res) => {
             idChat: chatId,
             nombre: userInfo[0].Nom_user + " " + userInfo[0].Ape_user,
             Foto: userInfo[0].Foto,
+            CantPuntos: userInfo[0].CantPuntos,
             Usuario: UserBusq
         });
     }catch(err){

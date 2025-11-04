@@ -154,6 +154,7 @@ window.addEventListener('load', initMisiones);
 //CREAR GRUPO NUEVO
 const btnNewG = document.getElementById("actionBtn");
 const nuevoGrupoPanel = document.getElementById("NewGPanel");
+const closeNewGbtn = document.getElementById("closeNewGbtn");
 
 // toggle abrir/cerrar
 btnNewG.addEventListener("click", (e) => {
@@ -161,12 +162,11 @@ btnNewG.addEventListener("click", (e) => {
   nuevoGrupoPanel.style.display = (nuevoGrupoPanel.style.display === "block") ? "none" : "block";
 });
 
-// cerrar al dar click fuera
-// document.addEventListener("click", (e) => {
-//   if (!nuevoGrupoPanel.contains(e.target) && e.target !== btnNewG) {
-//     nuevoGrupoPanel.style.display = "none";
-//   }
-// });
+// cerrar al dar click en el btn
+closeNewGbtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  nuevoGrupoPanel.style.display = "none";
+});
 
 // Seleccionamos los elementos por ID
 const btnSearchNG = document.getElementById("btnSearchNG");

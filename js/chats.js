@@ -331,7 +331,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
           cargarEmailDestinario(chatId);
 
-          document.getElementById("chatNombre").innerHTML = `${chatData.nombre}&nbsp;&nbsp;&nbsp;&nbsp;${chatData.CantPuntos || 0} pts`;
+          const btnMisiones = document.querySelector(".btnMissions");
+          const btnCorreo = document.querySelector(".btnCorreo");
+
+          document.getElementById("chatNombre").innerHTML = `${chatData.nombre}&nbsp;&nbsp;&nbsp;&nbsp;${chatData.CantPuntos} pts`;
+          btnMisiones.style.display = "none";
+          btnCorreo.style.marginLeft = "59%";
+
           chatBox.style.display = "block";
           bienvenida.style.display = "none";
           //DEPURAR
@@ -382,7 +388,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
               cargarEmailDestinario(chatId);
 
-              document.getElementById("chatNombre").textContent = chatData.nombre;
+              const btnMisiones = document.querySelector(".btnMissions");
+              const btnCorreo = document.querySelector(".btnCorreo");
+
+              document.getElementById("chatNombre").innerHTML = `${chatData.nombre}&nbsp;&nbsp;&nbsp;&nbsp;${chatData.CantPuntos || 0} pts`;
+              btnMisiones.style.display = "none";
+              btnCorreo.style.marginLeft = "59%";
+
               chatBox.style.display = "block";
               bienvenida.style.display = "none";
 
@@ -653,6 +665,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           const btnCall = document.querySelector(".btnCall");
           const btnCorreo = document.querySelector(".btnCorreo");
+          const btnMisiones = document.querySelector(".btnMissions");
 
           if (chat.tipo === "individual") {
             document.getElementById("chatNombre").innerHTML =
@@ -660,11 +673,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
               btnCall.style.display = "inline-block";
               btnCorreo.style.display = "inline-block";
+              btnCorreo.style.marginLeft = "59%";
+              btnMisiones.style.display = "none";
           } else if (chat.tipo === "grupo") {
             document.getElementById("chatNombre").textContent = chat.nombreG;
 
             btnCall.style.display = "none";
             btnCorreo.style.display = "none";
+            btnMisiones.style.display = "inline-block";
           }
 
           chatBox.style.display = "block";
