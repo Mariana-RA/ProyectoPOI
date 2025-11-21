@@ -655,41 +655,43 @@ hr{
 
 .mision {
   display: grid;
-  grid-template-columns: 1fr auto;          /* nombre + botón */
-  grid-template-rows: auto auto;            /* nombre / barra */
-  gap: 8px 12px;
-  align-items: center;
-  padding: 10px;
-  border-radius: 10px;
-  background-color: #1b3689;
-  border: 1px solid #2e4484;
+  grid-template-columns: 1fr auto; /* barra + botón */
+  grid-template-rows: auto auto;   /* nombre y progreso */
+  gap: 6px 10px;
+  background: rgba(10, 20, 60, 0.4);
+  padding: 10px 14px;
+  border-radius: 12px;
   margin-bottom: 10px;
+  border: 1px solid #123a9c;
 }
-/* .mision:last-child { margin-bottom: 0; } */
 
 .misionNombre {
   grid-column: 1 / 2;
-  font-weight: 450;
+  font-weight: 500;
   color: aliceblue;
   font-size: 15px;
-  margin-right: 90px;
+  margin: 0;
+  align-self: center;
 }
 
 .progreso {
-  grid-column: 1 / 3; /* que la barra ocupe todo el ancho debajo del nombre y antes del botón */
+  grid-column: 1 / 2;
   position: relative;
   height: 12px;
   background: linear-gradient(180deg, #e9f1ff, #d7e6ff);
   border-radius: 999px;
   overflow: hidden;
   border: 1px solid #052582;
+  display: flex;
+  align-items: center;
 }
 
 .progreso-fill {
   position: absolute;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   height: 100%;
-  width: 0%;                      /* se ajusta por JS */
+  width: 0%;
   background: linear-gradient(90deg, #1976d2, #42a5f5);
   transition: width 300ms ease;
 }
@@ -697,17 +699,25 @@ hr{
 .balon {
   position: absolute;
   top: 50%;
-  transform: translate(-50%, -50%);  /* centrado sobre el punto */
-  left: 0%;                           /* se ajusta por JS */
+  transform: translate(-50%, -50%);
+  left: 0%;
   pointer-events: none;
   font-size: 16px;
-  line-height: 1;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+}
+
+.contador {
+  margin-left: 8px;
+  color: #bbd6ff;
+  font-size: 13px;
+  align-self: center;
 }
 
 .btnReclamar {
   grid-column: 2 / 3;
+  grid-row: 1 / span 2;
   justify-self: end;
+  align-self: center;
   padding: 6px 12px;
   border: none;
   border-radius: 999px;
@@ -716,13 +726,17 @@ hr{
   cursor: pointer;
   transition: transform 120ms ease, opacity 120ms ease;
 }
+
 .btnReclamar:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
   background: #90caf9;
 }
-.btnReclamar:not(:disabled):hover { transform: translateY(-1px); }
+
+.btnReclamar:not(:disabled):hover {
+  transform: translateY(-1px);
+}
 
 .Chsettings{
   display: none;
@@ -738,7 +752,8 @@ hr{
   text-align: center;
   z-index: 100;
   padding: 10px;
-  height: 37%;
+  height: auto;
+  max-height: 80vh;
 }
 
 .Chsettings h2{
@@ -883,6 +898,36 @@ hr{
   background-color: #1b5cddd7;
   color: #c1cfc6;
 }
+
+.dropdownMissiones{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.dropdownMissiones select{
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #0937f18e;
+  font-size: 16px;
+  width: 80%;
+  color: #c1cfc6;
+  border: 1px solid #c1cfc6;
+  padding: 8px 8px 8px 8px;
+  margin-left: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+}
+
+.dropdownMissiones select option{
+  background-color: #1b5cddd7;
+  color: #c1cfc6;
+}
+
 
 .btnNewMission{
   background-color: #5879dc;

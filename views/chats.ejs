@@ -91,7 +91,7 @@
 
 
           <div class="misionesPanel" id="misionesPanel">
-            <div class="mision" data-progress="50">
+            <!-- <div class="mision" data-progress="50">
               <span class="misionNombre">Nombre de la mision</span>
 
               <div class="progreso">
@@ -144,7 +144,7 @@
               </div>
 
               <button class="btnReclamar" disabled>Reclamar</button>
-            </div>
+            </div> -->
 
           </div>
 
@@ -160,18 +160,29 @@
           </div>
 
           <div class="NewMissionP" id="NewMissionP">
+            <button class="closeNewGbtn" id="closeMissionPbtn">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
             <h2>CREAR MISIÓN</h2>
-            <label>Nombre de la misión</label>
-            <input type="text" class="inputTNewM" id="inputTNewM" placeholder="Ingresa el nombre de la mision">
+            <div class="dropdownMissiones">
+              <label>Selecciona una misión</label>
+              <select>
+                  <option value="">-- Selecciona una misión --</option>
+                  <option value="SubirArchivo">Subir un archivo o imagen</option>
+                  <option value="mundial26">Usar el #Mundial2026</option>
+                  <option value="JugadorFavorito">Menciona a tu jugador favorito usando el @</option>
+              </select>
+            </div>
+            
             <label>Cantidad para completar la misión</label>
             <input type="text" class="inputCantM" id="inputCantM" placeholder="Ingresa la cantidad para completarla">
             <div class="dropdown">
                 <label>Cantidad de puntos</label>
                 <select>
-                    <option value="year">5</option>
-                    <option value="pais">10</option>
-                    <option value="likes">15</option>
-                    <option value="commentsr">20</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
                 </select>
             </div>
 

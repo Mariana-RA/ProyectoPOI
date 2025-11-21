@@ -330,4 +330,142 @@ router.post("/sendEmail", isAuthenticated, async (req,res) => {
   }
 });
 
+//CREAR MISIONES EN GRUPOS
+router.post("/crearMision", isAuthenticated, async (req,res) => {
+  try{
+    const { type_Mision, cant_Rep, puntos, chatId} = req.body;
+
+    if(!type_Mision || !cant_Rep || !puntos || !chatId){
+      return res.status(400).json({error: "Faltan datos de la misión"});
+    }
+
+    await pool.query(
+      "INSERT INTO misiones (nom_Mision, cant_Rep, puntos, id_Chat) VALUES(?,?,?,?)",
+      [type_Mision, cant_Rep, puntos, chatId]
+    );
+
+    res.json({ok: true, message: "Misión creada con éxito"});
+  }catch(err){
+    console.error("Error en /crearMision:", err);
+    res.status(500).json({error: "Error al crear la misión"});
+  }
+});
+
+// router.get("/misiones/:idChat", isAuthenticated, async (req,res) => {
+//   const {idChat} = req.params;
+//   const [misiones] = await pool.query(
+//     "SELECT * FROM misiones WHERE id_Chat = ?",
+//     [idChat]
+//   );
+//   res.json(misiones);
+// });
+router.get("/misiones/:idChat", isAuthenticated, async (req,res) => {
+  try{
+    const {idChat} = req.params;
+    const {id_User} = req.query;
+
+    const [misiones] = await pool.query(`
+      SELECT m.*, IFNULL(um.num_rondas, 0) AS progreso, IFNULL(um.st_Mision, 'pendiente') AS estado
+      FROM misiones m
+      LEFT JOIN user_misiones um
+        ON m.id_Mision = um.id_Mision
+        AND um.Usuario = ?
+        WHERE m.id_Chat = ?
+      `, [id_User, idChat]);
+    res.json(misiones);
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ ok: false, error: "Error al obtener misiones"});
+  }
+});
+
+router.post("/validarMisionesU", async (req, res) => {
+  try{
+    const {id_User} = req.body;
+
+    const [mensajes] = await pool.query(
+      "SELECT * FROM mensajes WHERE remitente = ? AND DATE(fecha_M) = CURDATE()",
+      [id_User]
+    );
+
+    const [misiones] = await pool.query("SELECT * FROM misiones");
+
+    for(const m of misiones){
+      let contador = 0;
+
+      if (m.nom_Mision === "SubirArchivo") {
+        contador = mensajes.filter(msg => msg.tipo === "archivo").length;
+      } else if (m.nom_Mision === "mundial26") {
+        contador = mensajes.filter(msg => msg.contenido?.includes("#Mundial2026")).length;
+      } else if (m.nom_Mision === "JugadorFavorito") {
+        contador = mensajes.filter(msg => msg.contenido?.includes("@")).length;
+      }
+
+      if(contador > 0){
+        const [existe] = await pool.query(
+          "SELECT * FROM user_misiones WHERE Usuario = ? AND id_Mision = ?",
+          [id_User, m.id_Mision]
+        );
+
+        if(existe.length > 0){
+          const nuevoProgreso = Math.min(contador, m.cant_Rep);
+          const estado = nuevoProgreso >= m.cant_Rep ? "Completada" : "Pendiente";
+
+          await pool.query(
+            "UPDATE user_misiones SET num_Rondas = ?, st_Mision = ? WHERE Usuario = ? AND id_Mision = ?",
+            [nuevoProgreso, estado, id_User, m.id_Mision]
+          );
+        }else{
+          const estado = contador >= m.cant_Rep ? "Completada" : "Pendiente";
+          await pool.query(
+            "INSERT INTO user_misiones (Usuario, id_Mision, num_Rondas, st_Mision) VALUES (?,?,?,?)",
+            [id_User, m.id_Mision, contador, estado]
+          );
+        }
+      }
+    }
+
+    res.json({ok : true, message: "Misiones actualizadas"});
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ ok: false, error: "Error al actualizar misiones"});
+  }
+});
+
+router.post("/reclamarMision", async (req,res) => {
+  try{
+    const {id_User, id_Mision} = req.body;
+
+    const [mision] = await pool.query(
+      "SELECT puntos FROM misiones WHERE id_Mision = ?",
+      [id_Mision]
+    );
+
+    if(!mision.length){
+      return res.status(500).json({ok: false, message: "Mision no encontrada"});
+    }
+
+    const puntos = mision[0].puntos;
+
+    await pool.query(
+      "UPDATE usuarios SET CantPuntos = CantPuntos + ? WHERE Usuario = ?",
+      [puntos, id_User]
+    );
+
+    const isReclamada = "Reclamada";
+
+    const [result] = await pool.query(
+      "UPDATE user_misiones SET st_Mision = ? WHERE Usuario = ? AND id_Mision = ?",
+      [isReclamada, id_User, id_Mision]
+    );
+
+    console.log("Filas afectadas:", result.affectedRows);
+
+    res.json({ok: true, message: `Has reclamado ${puntos} puntos.`});
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ok: false, error: "Error al reclamar la mision"});
+  }
+});
+
 module.exports = router;

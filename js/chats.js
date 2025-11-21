@@ -38,6 +38,7 @@ document.addEventListener("click", (e) => {
 const btnNewMission = document.querySelector("#btnCrMission");
 const PanelNewM = document.querySelector("#NewMissionP");
 const Chsettings = document.querySelector("#Chsettings");
+const closeMissionPbtn = document.getElementById("closeMissionPbtn");
 
 btnNewMission.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -50,14 +51,9 @@ btnNewMission.addEventListener("click", (e) => {
   }
 });
 
-document.addEventListener("click", (e) => {
-  if (
-    PanelNewM.style.display === "block" &&
-    !PanelNewM.contains(e.target) &&
-    e.target !== btnNewMission
-  ) {
-    PanelNewM.style.display = "none";
-  }
+closeMissionPbtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  PanelNewM.style.display = "none";
 });
 
 //PANEL DE REDACTAR CORREO
@@ -195,6 +191,39 @@ const socket = io();
 
 socket.emit("userConnected", username);
 
+//CREAR MISIONES GRUPOS
+const btnCrearMision = document.getElementById("btnNewMission");
+
+btnCrearMision.addEventListener("click", async () => {
+  const type_Mision = document.querySelector(".dropdownMissiones select").value;
+  const cant_Rep = document.getElementById("inputCantM").value.trim();
+  const puntos = document.querySelector(".dropdown select").value;
+  const messageBox = document.getElementById("messageBox");
+  const errorMsg = document.getElementById("errorMsg");
+
+  if(!type_Mision || !cant_Rep || !puntos){
+    errorMsg.textContent = "Debes llenar todos los campos";
+    messageBox.style.display = "block";
+    return;
+  }
+
+  const res = await fetch("/chats/crearMision", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({type_Mision, cant_Rep, puntos, chatId}),
+  });
+
+  const data = await res.json();
+  if(data.ok){
+    errorMsg.textContent = "Misión creada con éxito";
+    messageBox.style.display = "block";
+    PanelNewM.style.display = "none";
+    //cargarMisMisiones();
+  }else{
+    console.log("Error al crear la mision");
+  }
+});
+
 //--------------------VIDEOLLAMADA------------------------------------------
 const btnCall = document.querySelector(".btnCall");
 const videoCont = document.getElementById("videoContainer");
@@ -288,6 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const listaMiembros = document.getElementById("listaMiembros"); // div para miembros seleccionados
   const btnConfirmar = document.querySelector(".btnConfirmar"); // botón crear grupo
   const inputNombreGrupo = document.querySelector(".inputGrupo");
+  const btnCrearMision = document.getElementById("btnCrMission");
 
   let miembrosSeleccionados = [];
 
@@ -337,6 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
           document.getElementById("chatNombre").innerHTML = `${chatData.nombre}&nbsp;&nbsp;&nbsp;&nbsp;${chatData.CantPuntos} pts`;
           btnMisiones.style.display = "none";
           btnCorreo.style.marginLeft = "59%";
+          btnCrearMision.style.display = "none";
 
           chatBox.style.display = "block";
           bienvenida.style.display = "none";
@@ -394,6 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
               document.getElementById("chatNombre").innerHTML = `${chatData.nombre}&nbsp;&nbsp;&nbsp;&nbsp;${chatData.CantPuntos || 0} pts`;
               btnMisiones.style.display = "none";
               btnCorreo.style.marginLeft = "59%";
+              btnCrearMision.style.display = "none";
 
               chatBox.style.display = "block";
               bienvenida.style.display = "none";
@@ -578,6 +610,100 @@ document.addEventListener("DOMContentLoaded", () => {
     
   }
 
+  // ------------------ CARGAR MISIONES ---------------------
+  async function cargarMisMisiones(chatId) {
+    try{
+      const id_User = username;
+
+      await fetch("/chats/validarMisionesU", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({id_User}),
+      });
+
+      const res = await fetch(`/chats/misiones/${chatId}?id_User=${id_User}`);
+      const misiones = await res.json();
+
+      const contMisiones = document.getElementById("misionesPanel");
+      contMisiones.innerHTML = "";
+
+      if (!misiones.length) {
+        contMisiones.innerHTML = `
+          <p style="color: #e0e6f1; margin-top: 15px;">
+            No hay misiones activas en este grupo.
+          </p>`;
+        return;
+      }
+
+      misiones.forEach((m) => {
+        const div = document.createElement("div");
+        div.classList.add("mision");
+
+        const progresoActual = m.progreso; 
+        const progresoTotal = m.cant_Rep;
+        const porcentaje = (progresoActual / progresoTotal) * 100;
+        const disabledAttr = porcentaje >= 100 && m.estado !== "Reclamada" ? "" : "disabled";
+
+        //div.setAttribute("data-progress", porcentaje);
+
+        const nombresBonitos = {
+          "SubirArchivo": "Subir un archivo o imagen",
+          "mundial26": "Usar el #Mundial2026",
+          "JugadorFavorito": "Menciona a tu jugador favorito usando el @"
+        };
+
+        const nomMision = nombresBonitos[m.nom_Mision] || "Misión desconocida";
+
+        div.innerHTML = `
+          <span class="misionNombre">${nomMision}</span>
+          <div class="progreso">
+            <div class="progreso-fill" style="width: ${porcentaje}%;"></div>
+            <div class="balon" style="left: ${Math.min(porcentaje, 98)}%;">⚽</div>
+          </div>
+          <span class="contador">${progresoActual}/${progresoTotal}</span>
+          <button class="btnReclamar" data-id="${m.id_Mision}" ${disabledAttr}>
+            ${m.estado === "Reclamada" ? "Reclamada ✔" : "Reclamar"}
+          </button>
+        `;
+
+        contMisiones.appendChild(div);
+      });
+
+      contMisiones.querySelectorAll(".btnReclamar").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const id_Mision = btn.dataset.id;
+
+          const res = await fetch("/chats/reclamarMision", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_User, id_Mision}),
+          });
+
+          const data = await res.json();
+
+          if(data.ok){
+            errorMsg.textContent = data.message;
+            messageBox.style.display = "block";
+            // btn.disabled = true;
+            // btn.textContent = "Reclamada ✔";
+          }else{
+            errorMsg.textContent = data.error;
+            messageBox.style.display = "block";
+          }
+        });
+      });
+    }catch(err){
+      console.error("Error al cargar las misiones:", err);
+    }
+    
+  }
+
+  const btnPanelMisiones = document.getElementById("btnMisiones");
+
+  btnPanelMisiones.addEventListener("click", async () => {
+    cargarMisMisiones(chatId);
+  });
+
   // ------------------ CARGAR CHATS EXISTENTES ------------------
   async function cargarMisChats() {
     try {
@@ -699,6 +825,8 @@ document.addEventListener("DOMContentLoaded", () => {
               btnCorreo.style.marginLeft = "59%";
               btnMisiones.style.display = "none";
 
+              btnCrearMision.style.display = "none";
+
               if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
                 btnCorreo.style.marginLeft = "12%";
               }
@@ -708,6 +836,8 @@ document.addEventListener("DOMContentLoaded", () => {
             btnCall.style.display = "none";
             btnCorreo.style.display = "none";
             btnMisiones.style.display = "inline-block";
+
+            btnCrearMision.style.display = "inline-block";
           }
 
           chatBox.style.display = "block";
@@ -737,7 +867,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ------------------ SOCKET: RECIBIR MENSAJES ------------------
   socket.on("newMessage", (msg) => {
-    if (msg.remitente === username) return;
+    if (msg.remitente === username && msg.tipo === "texto") return;
 
     console.log("Mensaje recibido del servidor:", msg);
 
