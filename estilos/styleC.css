@@ -1336,12 +1336,12 @@ hr{
 
 /* ==================== TABLET ==================== */
 @media (min-width: 768px) and (max-width: 1024px) {
-  body, html {
+  /* body, html {
     height: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden; 
-  }
+  } */
 
   .barraNav {
     width: 100px; 
@@ -1446,8 +1446,6 @@ hr{
     justify-content: space-between; 
     gap: 1px;
     position: relative;
-    width: 700px;
-    max-width: 700px;
   }
 
   .btnCall,
@@ -1467,8 +1465,6 @@ hr{
   .chatMessages {
     height: 970px;
     max-height: 970px;
-    width: 680px;
-    max-width: 680px;
   }
 
   .chatInput textarea {
