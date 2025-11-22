@@ -278,6 +278,17 @@ body {
   height: auto;
 }
 
+.misRecompensas{
+  display: flex;
+  gap: 30px;
+  margin-top: 10px;
+}
+
+.imgRecompensasUser{
+  width: 80px;
+  height: 80px;
+}
+
 /* ESTILO PARA TABLETS --------------------------------------------------------------------------- */
 @media (min-width: 768px) and (max-width: 1024px) {
 

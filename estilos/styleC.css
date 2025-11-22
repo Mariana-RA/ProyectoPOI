@@ -1264,6 +1264,18 @@ hr{
   color: #ffffff;
 }
 
+.recompensas-container{
+  display: flex;
+  gap: 20px;
+  margin-top: 5px;
+  margin-right: 600px;
+}
+
+.imgRecompensasUser{
+  width: 30px !important;
+  height: 30px !important;
+  /* object-fit: contain; */
+}
 
 #videoContainer {
   position: fixed; 
@@ -1424,8 +1436,8 @@ hr{
   .headerChat {
     padding: 12px;
     flex-wrap: wrap;          
-    justify-content: space-between; 
-    gap: 10px;
+    /* justify-content: space-between;  */
+    gap: 1px;
     position: relative;
   }
 
@@ -1493,6 +1505,16 @@ hr{
     color: #e0e6f158;
     margin-left: 20px;
   }
+
+  .recompensas-container{
+    display: flex;
+    margin-right: 1500px;
+  }
+
+  /* .imgRecompensasUser{
+    width: 15px !important;
+    height: 15px !important;
+  } */
 
 }
 

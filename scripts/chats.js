@@ -468,4 +468,22 @@ router.post("/reclamarMision", async (req,res) => {
   }
 });
 
+router.get("/recompensas/:usuario", isAuthenticated, async (req,res) => {
+  try{
+      const {usuario} = req.params;
+
+      const [recomps] = await pool.query(`
+          SELECT r.direc_img
+          FROM user_recomp ur
+          JOIN recompensas r ON ur.id_Recomp = r.id_Recomp
+          WHERE ur.Usuario = ? 
+      `, [usuario]);
+
+      res.json(recomps);
+  }catch(err){
+      console.error("Error en misRecompensas:", err);
+      res.status(500).json({ error: "Error al obtener recompensas" });
+  }
+});
+
 module.exports = router;

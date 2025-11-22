@@ -43,7 +43,6 @@ router.get("/ranking", isAuthenticated, async (req,res) => {
             ORDER BY cantPuntos DESC, Usuario ASC
             LIMIT 3
         `);
-        console.log(top3);
 
         const [ranking] = await pool.query(`
             SELECT Usuario, Nom_user, Ape_user, Foto, cantPuntos
@@ -52,7 +51,6 @@ router.get("/ranking", isAuthenticated, async (req,res) => {
         `);
 
         const position = ranking.findIndex(u => u.Usuario === userLog) + 1;
-        console.log(position);
 
         const yo = ranking[position - 1];
 
@@ -70,6 +68,50 @@ router.get("/ranking", isAuthenticated, async (req,res) => {
     }catch(err){
         console.error("Error en el /ranking:", err);
         res.status(500).json({error: "Error al obtener ranking"});
+    }
+});
+
+router.post("/agregarRecompensas", isAuthenticated, async (req, res) => {
+    try{
+        const userLog = req.session.user.username;
+        const {id_Recomp} = req.body;
+
+        const [verificar] = await pool.query(`
+            SELECT * FROM user_recomp
+            WHERE Usuario = ? AND id_Recomp = ?    
+        `,[userLog,id_Recomp]);
+
+        if(verificar.length > 0){
+            return res.json({msg: "Ya esta registrada"});
+        }
+
+        await pool.query(`
+            INSERT INTO user_recomp (Usuario, id_Recomp)
+            VALUES (?,?)
+        `,[userLog, id_Recomp]);
+
+        res.json({msg: "Recompensa agregada"});
+    }catch(err){
+        console.error("Error en agregarRecompensa:", err);
+        res.status(500).json({ error: "Error al agregar recompensa" });
+    }
+});
+
+router.get("/misRecompensas", isAuthenticated, async (req,res) => {
+    try{
+        const userLog = req.session.user.username;
+
+        const [recomps] = await pool.query(`
+            SELECT r.direc_img
+            FROM user_recomp ur
+            JOIN recompensas r ON ur.id_Recomp = r.id_Recomp
+            WHERE ur.Usuario = ? 
+        `, [userLog]);
+
+        res.json(recomps);
+    }catch(err){
+        console.error("Error en misRecompensas:", err);
+        res.status(500).json({ error: "Error al obtener recompensas" });
     }
 });
 

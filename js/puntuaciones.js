@@ -1,5 +1,13 @@
 const puntosMaximos = 1000; 
 
+const niveles = [
+  { porcentaje: 100, id: 5 },
+  { porcentaje: 80,  id: 4 },
+  { porcentaje: 60,  id: 3 },
+  { porcentaje: 40,  id: 2 },
+  { porcentaje: 20,  id: 1 },
+];
+
 async function cargarMisPuntos(){
     try{
         const res = await fetch("/Puntuaciones/misPuntos");
@@ -18,6 +26,17 @@ async function cargarMisPuntos(){
         const porcentaje = (puntos / puntosMaximos) * 100;
 
         document.getElementById("progressFill").style.height = porcentaje + "%";
+
+        const recompAlcanzadas = niveles.filter(n => porcentaje >= n.porcentaje);
+
+        for(const r of recompAlcanzadas){
+            await fetch("/Puntuaciones/agregarRecompensas", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id_Recomp: r.id})
+            });
+        }
+
     }catch(err){
         console.error("Error en la obtener los puntos del usuario:", err);
     }
@@ -70,4 +89,24 @@ async function cargarRanking() {
 }
 
 cargarRanking();
+
+async function cargarRecompensas() {
+    try{
+        const res = await fetch("/Puntuaciones/misRecompensas");
+        const data = await res.json();
+
+        const cont = document.getElementById("misRecompensas");
+        cont.innerHTML = "";
+
+        data.forEach(r => {
+            cont.innerHTML += `
+                <img src="${r.direc_img}" class="imgRecompensasUser">
+            `;
+        });
+    }catch(err){
+        console.error("Error al cargar recompensas:", err);
+    }
+}
+
+cargarRecompensas();
 

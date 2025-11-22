@@ -704,6 +704,29 @@ document.addEventListener("DOMContentLoaded", () => {
     cargarMisMisiones(chatId);
   });
 
+  // ------------------ CARGAR RECOMPENSAS ---------------------
+  async function cargarRecompensasUser(usuarioId) {
+    try{
+      const res = await fetch(`/chats/recompensas/${usuarioId}`);
+      const recompensas = await res.json();
+
+      const cont = document.getElementById("recompensasChatUsuario");
+      if(!cont) return;
+
+      cont.innerHTML = "";
+
+      recompensas.forEach(recomp => {
+        const img = document.createElement("img");
+        img.src = recomp.direc_img;
+        img.classList.add("imgRecompensasUser");
+
+        cont.appendChild(img);
+      });
+    }catch(err){
+      console.error("Error cargando recompensas:", err);
+    }
+  }
+
   // ------------------ CARGAR CHATS EXISTENTES ------------------
   async function cargarMisChats() {
     try {
@@ -803,6 +826,7 @@ document.addEventListener("DOMContentLoaded", () => {
           sessionStorage.setItem("chatId", chatId);
 
           cargarEmailDestinario(chatId);
+          cargarRecompensasUser(chat.Usuario);
 
           const chkCifrar = document.getElementById("encryptMessages");
           chkCifrar.checked = chat.st_Cifrado === 1;
