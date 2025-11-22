@@ -26,32 +26,7 @@
       <img src="/Copa.png" alt="Copa izquierda" class="copa copa-left">
 
       <h2>Ranking de Puntuaciones</h2>
-      <ul class="ranking-list">
-        <li class="top1">
-          <span class="puesto">1</span>
-          <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="avatar">
-          <span class="nombre">Juan Pérez</span>
-          <span class="puntos">7000 pts</span>
-        </li>
-        <li>
-          <span class="puesto">2</span>
-          <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="avatar">
-          <span class="nombre">Carlos López</span>
-          <span class="puntos">5500 pts</span>
-        </li>
-        <li>
-          <span class="puesto">3</span>
-          <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="avatar">
-          <span class="nombre">Ana Torres</span>
-          <span class="puntos">4500 pts</span>
-        </li>
-        <li class="yo">
-          <span class="puesto">8</span>
-          <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png" class="avatar">
-          <span class="nombre">Yo</span>
-          <span class="puntos">500 pts</span>
-        </li>
-      </ul>
+      <ul class="ranking-list"></ul>
 
       <img src="/Copa.png" alt="Copa derecha" class="copa copa-right">
     </div>
@@ -61,24 +36,24 @@
       <div class="status-content">
         
         <div class="milestones-left">
-          <div class="milestone" style="top: 0%;">Recompensa 5</div>
-          <div class="milestone" style="top: 10%;">Recompensa 4</div>
-          <div class="milestone" style="top: 40%;">Recompensa 3</div>
-          <div class="milestone" style="top: 70%;">Recompensa 2</div>
-          <div class="milestone" style="top: 90%;">Recompensa 1</div>
+          <div class="milestone" style="top: 0%;"><img src="https://res.cloudinary.com/dk4mmuzuf/image/upload/v1763752428/CopaInsignia_lphaoh.png" class="imgRecompensas"></div>
+          <div class="milestone" style="top: 20%;"><img src="https://res.cloudinary.com/dk4mmuzuf/image/upload/v1763752412/Playera_b8uoox.png" class="imgRecompensas"></div>
+          <div class="milestone" style="top: 40%;"><img src="https://res.cloudinary.com/dk4mmuzuf/image/upload/v1763752460/TachonesInsignia_kvh3zp.png" class="imgRecompensas"></div>
+          <div class="milestone" style="top: 60%;"><img src="https://res.cloudinary.com/dk4mmuzuf/image/upload/v1763752440/GuantesInsignia_sfdqis.png" class="imgRecompensas"></div>
+          <div class="milestone" style="top: 80%;"><img src="https://res.cloudinary.com/dk4mmuzuf/image/upload/v1763752389/BalonInsignia_hz2nf4.png" class="imgRecompensas"></div>
         </div>
 
         <div class="progress-bar">
           <div class="progress-fill" id="progressFill"></div>
-          <div class="bar-marker" style="top: 10%;"></div>
+          <div class="bar-marker" style="top: 20%;"></div>
           <div class="bar-marker" style="top: 40%;"></div>
-          <div class="bar-marker" style="top: 70%;"></div>
-          <div class="bar-marker" style="top: 90%;"></div>
+          <div class="bar-marker" style="top: 60%;"></div>
+          <div class="bar-marker" style="top: 80%;"></div>
         </div>
 
         <div class="status-info">
           <label class="titPoints">Mis puntos:</label>
-          <p id="misPuntos" class="MyPoints">500 pts</p>
+          <p id="misPuntos" class="MyPoints"></p>
         </div>
       </div>
     </div>
@@ -93,9 +68,13 @@
   </div>
 
   <script src="/menu.js"></script>
+  <script>
+    const username = "<%= user ? user.username : '' %>";
+  </script>
+  <script src="/puntuaciones.js"></script>
   <script src="/Quiniela.js"></script>
 </body>
-<script>
+<!-- <script>
   const puntosActuales = 500; 
   const puntosMaximos = 10000; 
 
@@ -104,6 +83,6 @@
   document.getElementById("progressFill").style.height = porcentaje + "%";
 
   document.getElementById("misPuntos").textContent = puntosActuales + " pts";
-</script>
+</script> -->
 
 </html>

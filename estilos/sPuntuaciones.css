@@ -273,6 +273,11 @@ body {
   margin: 0;
 }
 
+.imgRecompensas{
+  width: 50px;
+  height: auto;
+}
+
 /* ESTILO PARA TABLETS --------------------------------------------------------------------------- */
 @media (min-width: 768px) and (max-width: 1024px) {
 
