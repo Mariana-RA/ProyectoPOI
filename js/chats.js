@@ -375,6 +375,12 @@ document.addEventListener("DOMContentLoaded", () => {
           console.log("Intentando unirse al chat:", chatId, username);
           socket.emit("joinChat", chatId, username);
           cargarMensajes(chatId);
+          if (window.intervaloMensajes) clearInterval(window.intervaloMensajes);
+
+          // creamos un intervalo nuevo
+          window.intervaloMensajes = setInterval(() => {
+              cargarMensajes(chatId);
+          }, 2500);
 
           // ---- ACTUALIZAR LISTA DE CHATS ----
           const listaChats = document.getElementById("listaChats");
@@ -434,6 +440,13 @@ document.addEventListener("DOMContentLoaded", () => {
               console.log("Intentando unirse al chat:", chatId, username);
               socket.emit("joinChat", chatId, username);
               cargarMensajes(chatId);
+
+              if (window.intervaloMensajes) clearInterval(window.intervaloMensajes);
+
+              // creamos un intervalo nuevo
+              window.intervaloMensajes = setInterval(() => {
+                  cargarMensajes(chatId);
+              }, 2500);
             });
           }
           inputBusq.value = "";
@@ -880,6 +893,13 @@ document.addEventListener("DOMContentLoaded", () => {
           // Unirse al chat por socket y cargar mensajes
           socket.emit("joinChat", chatId, username);
           cargarMensajes(chatId);
+
+          if (window.intervaloMensajes) clearInterval(window.intervaloMensajes);
+
+          // creamos un intervalo nuevo
+          window.intervaloMensajes = setInterval(() => {
+              cargarMensajes(chatId);
+          }, 2500);
         });
       });
     } catch (err) {
