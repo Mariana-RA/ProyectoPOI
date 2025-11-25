@@ -10,7 +10,9 @@ function isAuthenticated(req, res, next) {
 }
 
 router.get("/", isAuthenticated, (req, res) => {
-    res.render("Home");
+    res.render("Home", { 
+        user: req.session.user, 
+    });
 });
 
 router.post("/quinielaEnviar", async (req, res) => {
